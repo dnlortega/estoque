@@ -48,8 +48,6 @@ export default function RootLayout({
                 <header className="flex h-16 shrink-0 items-center justify-between px-4 md:px-8 border-b transition-colors bg-card/50 backdrop-blur-sm sticky top-0 z-10 uppercase font-black tracking-widest text-[10px]">
                   <div className="flex items-center gap-4">
                     <SidebarTrigger className="h-9 w-9" />
-                    <div className="h-4 w-[1px] bg-border hidden md:block" />
-                    <span className="font-black text-xs hidden md:block tracking-[0.5em] scale-x-150 origin-left ml-2">ESTOQUE+</span>
                   </div>
                   <div className="flex items-center gap-4 text-xs font-black">
                     <span className="hidden sm:block opacity-50">GERENCIAMENTO PROFISSIONAL</span>

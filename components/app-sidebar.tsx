@@ -64,7 +64,6 @@ export function AppSidebar() {
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                         <Package className="h-5 w-5" />
                     </div>
-                    <span className="text-xl font-black tracking-[0.3em] scale-x-125 origin-left uppercase ml-2">ESTOQUE+</span>
                 </div>
             </SidebarHeader>
             <SidebarContent>
