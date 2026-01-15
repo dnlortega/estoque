@@ -43,7 +43,7 @@ export function BottomNav() {
     ];
 
     return (
-        <div className="fixed bottom-0 left-0 z-50 w-full h-16 bg-[#0B1121] border-t border-white/10 pb-safe">
+        <div className="fixed bottom-0 left-0 z-50 w-full h-16 bg-background/95 backdrop-blur-sm border-t border-border pb-safe transition-colors duration-300">
             <div className="grid h-full grid-cols-5 mx-auto font-medium">
                 {items.map((item) => {
                     const isActive = pathname === item.url;
@@ -52,14 +52,14 @@ export function BottomNav() {
                             key={item.url}
                             href={item.url}
                             className={cn(
-                                "inline-flex flex-col items-center justify-center px-5 hover:bg-white/5 transition-colors group",
-                                isActive ? "text-white" : "text-gray-500 dark:text-gray-400"
+                                "inline-flex flex-col items-center justify-center px-5 hover:bg-accent/50 transition-colors group",
+                                isActive ? "text-primary" : "text-muted-foreground hover:text-primary/70"
                             )}
                         >
                             <item.icon
                                 className={cn(
                                     "w-6 h-6 transition-all duration-200",
-                                    isActive ? "text-white" : "text-gray-500 dark:text-gray-400 group-hover:text-gray-300"
+                                    isActive ? "scale-110" : "group-hover:scale-105"
                                 )}
                                 strokeWidth={isActive ? 2.5 : 2}
                             />

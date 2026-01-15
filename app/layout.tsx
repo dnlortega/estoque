@@ -60,8 +60,8 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="flex min-h-screen w-full bg-background text-foreground transition-colors duration-300">
-            <div className="flex flex-col flex-1 min-w-0 pb-20">
+          <div className="flex h-screen w-full bg-background text-foreground transition-colors duration-300 overflow-hidden">
+            <div className="flex flex-col flex-1 min-w-0 pb-20 h-full">
               <header className="flex h-16 shrink-0 items-center justify-between px-4 md:px-8 border-b transition-colors bg-card/50 backdrop-blur-sm sticky top-0 z-10 uppercase font-black tracking-widest text-[10px]">
                 <div className="flex items-center gap-4">
                   <span className="text-xs font-black text-primary">ESTOQUE+</span>
