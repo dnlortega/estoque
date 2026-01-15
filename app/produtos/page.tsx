@@ -21,7 +21,7 @@ export default async function ProductsPage() {
                 <CardHeader>
                     <CardTitle>Todos os Produtos</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="overflow-x-auto">
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -33,7 +33,7 @@ export default async function ProductsPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {products.map((product) => (
+                            {products.map((product: Product) => (
                                 <TableRow key={product.id}>
                                     <TableCell className="font-medium">{product.name}</TableCell>
                                     <TableCell>{formatCurrency(product.price)}</TableCell>
