@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  price       Float
+  quantity    Int      @default(0) // Estoque Central
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  consignments Consignment[]
+  movements    MovementLog[]
+}
+
+model Seller {
+  id        String   @id @default(cuid())
+  name      String
+  cpf       String   @unique
+  address   String
+  phone     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  consignments Consignment[]
+  movements    MovementLog[]
+}
+
+model Consignment {
+  id        String @id @default(cuid())
+  sellerId  String
+  productId String
+  quantity  Int
+
+  seller    Seller  @relation(fields: [sellerId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+
+  @@unique([sellerId, productId])
+}
+
+enum MovementType {
+  ENTRY    // Entrada no estoque central (+)
+  TRANSFER // Estoque Central -> Vendedor (-) para (+)
+  RETURN   // Vendedor -> Estoque Central (+) para (-)
+  SALE     // Vendedor -> Venda (-)
+}
+
+model MovementLog {
+  id         String       @id @default(cuid())
+  type       MovementType
+  quantity   Int
+  productId  String
+  sellerId   String?
+  timestamp  DateTime     @default(now())
+
+  product    Product      @relation(fields: [productId], references: [id])
+  seller     Seller?      @relation(fields: [sellerId], references: [id])
+}
