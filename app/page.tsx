@@ -6,8 +6,14 @@ import { Package, AlertTriangle, Wallet, HandCoins, Info } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import { CreateProductDialog } from '@/components/create-product-dialog';
 import { StockAdjustmentDialog } from '@/components/stock-adjustment-dialog';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Product } from '@/types';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export default async function DashboardPage() {
   const products: Product[] = await getProducts() as any;
@@ -71,9 +77,9 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* ALERTAS DE ESTOQUE COM POPOVER */}
-        <Popover>
-          <PopoverTrigger asChild>
+        {/* ALERTAS DE ESTOQUE COM DIALOG (CENTRALIZADO) */}
+        <Dialog>
+          <DialogTrigger asChild>
             <Card className={`cursor-pointer transition-all hover:ring-2 hover:ring-primary/20 ${lowStockCount > 0 ? "border-red-200 bg-red-50 dark:bg-red-950/20" : ""}`}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-xs font-bold uppercase">ALERTAS DE ESTOQUE</CardTitle>
@@ -88,40 +94,40 @@ export default async function DashboardPage() {
                 </p>
               </CardContent>
             </Card>
-          </PopoverTrigger>
-          <PopoverContent className="w-[400px] p-0 shadow-2xl border-red-100" align="end">
-            <div className="bg-red-500 p-3 text-white">
-              <h4 className="font-black text-xs uppercase flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4" />
+          </DialogTrigger>
+          <DialogContent className="max-w-5xl w-[95vw] p-0 overflow-hidden border-red-100 scrollbar-hide">
+            <DialogHeader className="bg-red-500 p-4 text-white">
+              <DialogTitle className="font-black text-sm uppercase flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5" />
                 PRODUTOS COM ESTOQUE BAIXO (ABAIXO DE 5)
-              </h4>
-            </div>
-            <div className="max-h-[300px] overflow-y-auto">
+              </DialogTitle>
+            </DialogHeader>
+            <div className="max-h-[85vh] overflow-y-auto pr-2 scrollbar-hide">
               <Table>
                 <TableHeader className="bg-muted/50">
                   <TableRow>
-                    <TableHead className="text-[10px] h-8 uppercase">PRODUTO</TableHead>
-                    <TableHead className="text-[10px] h-8 uppercase text-center">TAM.</TableHead>
-                    <TableHead className="text-[10px] h-8 uppercase text-right pr-4">QNTD.</TableHead>
+                    <TableHead className="text-[10px] h-9 uppercase pl-4">PRODUTO</TableHead>
+                    <TableHead className="text-[10px] h-9 uppercase text-center">TAM.</TableHead>
+                    <TableHead className="text-[10px] h-9 uppercase text-right pr-6">QNTD.</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {lowStockCount === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={3} className="text-center py-6 text-[10px] text-muted-foreground uppercase">
+                      <TableCell colSpan={3} className="text-center py-10 text-[10px] text-muted-foreground uppercase italic">
                         NENHUM ALERTA NO MOMENTO
                       </TableCell>
                     </TableRow>
                   ) : (
                     lowStockProducts.map((p: Product) => (
                       <TableRow key={p.id} className="hover:bg-red-50/30">
-                        <TableCell className="text-[10px] font-bold py-2 uppercase leading-tight">
+                        <TableCell className="text-[11px] font-bold py-3 uppercase leading-tight pl-4">
                           {p.name}
                         </TableCell>
-                        <TableCell className="text-center py-2">
-                          <Badge variant="outline" className="text-[9px] h-4 px-1">{p.size || '-'}</Badge>
+                        <TableCell className="text-center py-3">
+                          <Badge variant="outline" className="text-[10px] h-5 px-1.5">{p.size || '-'}</Badge>
                         </TableCell>
-                        <TableCell className="text-right pr-4 py-2 font-black text-red-600">
+                        <TableCell className="text-right pr-6 py-3 font-black text-red-600 text-sm">
                           {p.quantity}
                         </TableCell>
                       </TableRow>
@@ -130,8 +136,8 @@ export default async function DashboardPage() {
                 </TableBody>
               </Table>
             </div>
-          </PopoverContent>
-        </Popover>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <Card>

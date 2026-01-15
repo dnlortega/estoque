@@ -163,8 +163,17 @@ export async function transferToSeller(productId: string, sellerId: string, quan
 }
 
 export async function returnFromSeller(productId: string, sellerId: string, quantity: number) {
-    // 1. Subtrair da consignação
-    await prisma.consignment.update({
+    // 1. Verificar se o vendedor tem a quantidade necessária
+    const consignment = await prisma.consignment.findUnique({
+        where: { sellerId_productId: { sellerId, productId } }
+    });
+
+    if (!consignment || consignment.quantity < quantity) {
+        throw new Error('SALDO INSUFICIENTE EM CONSIGNAÇÃO.');
+    }
+
+    // 2. Subtrair da consignação
+    const updated = await prisma.consignment.update({
         where: {
             sellerId_productId: {
                 sellerId,
@@ -174,13 +183,13 @@ export async function returnFromSeller(productId: string, sellerId: string, quan
         data: { quantity: { decrement: quantity } },
     });
 
-    // 2. Adicionar ao estoque central
+    // 3. Adicionar ao estoque central
     await prisma.product.update({
         where: { id: productId },
         data: { quantity: { increment: quantity } },
     });
 
-    // 3. Registrar log
+    // 4. Registrar log
     await prisma.movementLog.create({
         data: {
             type: 'RETURN',
@@ -190,13 +199,29 @@ export async function returnFromSeller(productId: string, sellerId: string, quan
         },
     });
 
+    // 5. Limpar se chegar a 0
+    if (updated.quantity <= 0) {
+        await prisma.consignment.delete({
+            where: { sellerId_productId: { sellerId, productId } }
+        });
+    }
+
     revalidatePath('/');
     revalidatePath('/consignacao');
 }
 
 export async function sellFromSeller(productId: string, sellerId: string, quantity: number) {
-    // 1. Subtrair da consignação
-    await prisma.consignment.update({
+    // 1. Verificar se o vendedor tem a quantidade necessária
+    const consignment = await prisma.consignment.findUnique({
+        where: { sellerId_productId: { sellerId, productId } }
+    });
+
+    if (!consignment || consignment.quantity < quantity) {
+        throw new Error('SALDO INSUFICIENTE EM CONSIGNAÇÃO.');
+    }
+
+    // 2. Subtrair da consignação
+    const updated = await prisma.consignment.update({
         where: {
             sellerId_productId: {
                 sellerId,
@@ -206,7 +231,7 @@ export async function sellFromSeller(productId: string, sellerId: string, quanti
         data: { quantity: { decrement: quantity } },
     });
 
-    // 2. Registrar log de venda
+    // 3. Registrar log de venda
     await prisma.movementLog.create({
         data: {
             type: 'SALE',
@@ -216,12 +241,8 @@ export async function sellFromSeller(productId: string, sellerId: string, quanti
         },
     });
 
-    // 3. Deletar a consignação se a quantidade chegar a 0
-    const updatedConsignment = await prisma.consignment.findUnique({
-        where: { sellerId_productId: { sellerId, productId } }
-    });
-
-    if (updatedConsignment && updatedConsignment.quantity <= 0) {
+    // 4. Deletar a consignação se a quantidade chegar a 0
+    if (updated.quantity <= 0) {
         await prisma.consignment.delete({
             where: { sellerId_productId: { sellerId, productId } }
         });
@@ -249,21 +270,21 @@ export async function getDashboardStats() {
         include: { product: true },
     });
 
-    const totalSalesValue = sales.reduce((acc: number, sale: any) => acc + (sale.quantity * sale.product.price), 0);
+    const totalSalesValue = Math.max(0, sales.reduce((acc: number, sale: any) => acc + (sale.quantity * sale.product.price), 0));
 
     const consignments = await prisma.consignment.findMany({
         include: { product: true }
     });
-    const totalInConsignment = consignments.reduce((acc: number, c: any) => acc + c.quantity, 0);
-    const totalInConsignmentValue = consignments.reduce((acc: number, c: any) => acc + (c.quantity * c.product.price), 0);
+    const totalInConsignment = Math.max(0, consignments.reduce((acc: number, c: any) => acc + c.quantity, 0));
+    const totalInConsignmentValue = Math.max(0, consignments.reduce((acc: number, c: any) => acc + (c.quantity * c.product.price), 0));
 
-    const centralStockValue = products.reduce((acc: number, p: any) => acc + (p.quantity * p.price), 0);
+    const centralStockValue = Math.max(0, products.reduce((acc: number, p: any) => acc + (p.quantity * p.price), 0));
 
     return {
         totalSalesValue,
         totalInConsignment,
         totalInConsignmentValue,
-        centralStock: products.reduce((acc: number, p: any) => acc + p.quantity, 0),
+        centralStock: Math.max(0, products.reduce((acc: number, p: any) => acc + p.quantity, 0)),
         centralStockValue,
         totalProducts: products.length,
     };

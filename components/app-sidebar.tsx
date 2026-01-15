@@ -64,12 +64,12 @@ export function AppSidebar() {
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                         <Package className="h-5 w-5" />
                     </div>
-                    <span className="text-xl font-bold tracking-tight">Estoque+</span>
+                    <span className="text-xl font-black tracking-[0.3em] scale-x-125 origin-left uppercase ml-2">ESTOQUE+</span>
                 </div>
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>
-                    <SidebarGroupLabel>Menu Principal</SidebarGroupLabel>
+                    <SidebarGroupLabel className="uppercase font-bold text-[10px]">MENU PRINCIPAL</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {items.map((item) => (
@@ -77,11 +77,11 @@ export function AppSidebar() {
                                     <SidebarMenuButton
                                         asChild
                                         isActive={pathname === item.url}
-                                        tooltip={item.title}
+                                        tooltip={item.title.toUpperCase()}
                                     >
                                         <Link href={item.url}>
                                             <item.icon />
-                                            <span>{item.title}</span>
+                                            <span className="uppercase font-bold text-xs tracking-wide">{item.title}</span>
                                         </Link>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>

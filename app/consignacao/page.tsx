@@ -6,9 +6,15 @@ import { ConsignmentActions } from '@/components/consignment-actions';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/utils';
 import { Product, Seller } from '@/types';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { User, Package, HandCoins, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
 
 export default async function ConsignmentPage() {
     const sellers: Seller[] = await getSellers() as any;
@@ -38,14 +44,14 @@ export default async function ConsignmentPage() {
                         </TableHeader>
                         <TableBody>
                             {sellers.map((seller: Seller) => {
-                                const totalQty = seller.consignments.reduce((acc: number, c) => acc + c.quantity, 0);
-                                const totalVal = seller.consignments.reduce((acc: number, c) => acc + (c.quantity * c.product.price), 0);
+                                const totalQty = Math.max(0, seller.consignments.reduce((acc: number, c) => acc + c.quantity, 0));
+                                const totalVal = Math.max(0, seller.consignments.reduce((acc: number, c) => acc + (c.quantity * c.product.price), 0));
 
                                 return (
                                     <TableRow key={seller.id} className="group hover:bg-muted/30">
                                         <TableCell className="pl-6 py-4">
-                                            <Popover>
-                                                <PopoverTrigger asChild>
+                                            <Dialog>
+                                                <DialogTrigger asChild>
                                                     <Button variant="ghost" className="h-auto p-0 hover:bg-transparent flex flex-col items-start gap-1 group-hover:text-primary transition-colors">
                                                         <span className="text-base font-bold flex items-center gap-2 uppercase">
                                                             <User className="h-4 w-4 text-muted-foreground" />
@@ -53,44 +59,44 @@ export default async function ConsignmentPage() {
                                                             <ChevronRight className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
                                                         </span>
                                                     </Button>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="w-[450px] p-0 shadow-2xl border-primary/10" align="start">
-                                                    <div className="bg-primary/5 p-4 border-b border-primary/10">
-                                                        <h4 className="font-bold text-sm uppercase flex items-center gap-2">
+                                                </DialogTrigger>
+                                                <DialogContent className="max-w-5xl w-[95vw] p-0 overflow-hidden shadow-2xl border-primary/10 scrollbar-hide">
+                                                    <DialogHeader className="bg-primary/5 p-4 border-b border-primary/10">
+                                                        <DialogTitle className="font-bold text-sm uppercase flex items-center gap-2">
                                                             <Package className="h-4 w-4" />
                                                             ITENS COM {seller.name}
-                                                        </h4>
-                                                    </div>
-                                                    <div className="max-h-[400px] overflow-y-auto">
+                                                        </DialogTitle>
+                                                    </DialogHeader>
+                                                    <div className="max-h-[85vh] overflow-y-auto scrollbar-hide px-2">
                                                         <Table>
                                                             <TableHeader className="bg-muted/30">
                                                                 <TableRow>
-                                                                    <TableHead className="text-[10px] uppercase h-8">PRODUTO</TableHead>
-                                                                    <TableHead className="text-[10px] uppercase h-8 text-center">TAM.</TableHead>
-                                                                    <TableHead className="text-[10px] uppercase h-8 text-center">QNTD.</TableHead>
-                                                                    <TableHead className="text-[10px] uppercase h-8 text-right pr-4">AÇÕES</TableHead>
+                                                                    <TableHead className="text-[10px] uppercase h-9 pl-4">PRODUTO</TableHead>
+                                                                    <TableHead className="text-[10px] uppercase h-9 text-center">TAM.</TableHead>
+                                                                    <TableHead className="text-[10px] uppercase h-9 text-center">QNTD.</TableHead>
+                                                                    <TableHead className="text-[10px] uppercase h-9 text-right pr-6">AÇÕES</TableHead>
                                                                 </TableRow>
                                                             </TableHeader>
                                                             <TableBody>
                                                                 {seller.consignments.length === 0 ? (
                                                                     <TableRow>
-                                                                        <TableCell colSpan={4} className="text-center py-8 text-muted-foreground text-xs italic">
+                                                                        <TableCell colSpan={4} className="text-center py-10 text-muted-foreground text-xs italic uppercase">
                                                                             NENHUM ITEM EM CONSIGNÇÃO
                                                                         </TableCell>
                                                                     </TableRow>
                                                                 ) : (
                                                                     seller.consignments.map((c: any) => (
                                                                         <TableRow key={c.id} className="hover:bg-muted/20">
-                                                                            <TableCell className="text-xs font-medium py-3 border-l-2 border-transparent hover:border-primary">
+                                                                            <TableCell className="text-xs font-bold py-4 pl-4 uppercase">
                                                                                 {c.product.name}
                                                                             </TableCell>
-                                                                            <TableCell className="text-center py-3">
-                                                                                <Badge variant="outline" className="text-[10px] px-1 h-5">{c.product.size || '-'}</Badge>
+                                                                            <TableCell className="text-center py-4">
+                                                                                <Badge variant="outline" className="text-[10px] px-1.5 h-5">{c.product.size || '-'}</Badge>
                                                                             </TableCell>
-                                                                            <TableCell className="text-center font-bold py-3">
+                                                                            <TableCell className="text-center font-black py-4">
                                                                                 {c.quantity}
                                                                             </TableCell>
-                                                                            <TableCell className="text-right pr-4 py-3">
+                                                                            <TableCell className="text-right pr-6 py-4">
                                                                                 <ConsignmentActions
                                                                                     productId={c.productId}
                                                                                     sellerId={c.sellerId}
@@ -104,8 +110,8 @@ export default async function ConsignmentPage() {
                                                             </TableBody>
                                                         </Table>
                                                     </div>
-                                                </PopoverContent>
-                                            </Popover>
+                                                </DialogContent>
+                                            </Dialog>
                                         </TableCell>
                                         <TableCell className="text-muted-foreground text-xs font-mono uppercase">
                                             {seller.cpf} | {seller.phone}
@@ -124,7 +130,7 @@ export default async function ConsignmentPage() {
                             {sellers.length === 0 && (
                                 <TableRow>
                                     <TableCell colSpan={4} className="h-64 text-center">
-                                        <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
+                                        <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground text-xs uppercase">
                                             <HandCoins className="h-12 w-12 opacity-20" />
                                             <p>NENHUM VENDEDOR ENCONTRADO</p>
                                         </div>
