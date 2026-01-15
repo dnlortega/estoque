@@ -7,6 +7,8 @@ export interface Product {
     quantity: number;
     createdAt: Date;
     updatedAt: Date;
+    consignments?: Consignment[];
+    movements?: MovementLog[];
 }
 
 export interface Seller {
@@ -17,6 +19,8 @@ export interface Seller {
     phone: string;
     createdAt: Date;
     updatedAt: Date;
+    consignments: Consignment[];
+    movements?: MovementLog[];
 }
 
 export interface Consignment {
@@ -24,7 +28,7 @@ export interface Consignment {
     sellerId: string;
     productId: string;
     quantity: number;
-    seller: Seller;
+    seller?: Seller;
     product: Product;
 }
 

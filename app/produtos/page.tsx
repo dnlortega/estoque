@@ -5,9 +5,10 @@ import { CreateProductDialog } from '@/components/create-product-dialog';
 import { StockAdjustmentDialog } from '@/components/stock-adjustment-dialog';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/utils';
+import { Product } from '@/types';
 
 export default async function ProductsPage() {
-    const products = await getProducts();
+    const products: Product[] = await getProducts() as any;
 
     return (
         <div className="space-y-6">

@@ -3,9 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { CreateSellerDialog } from '@/components/create-seller-dialog';
 import { Users, MapPin, Phone, CreditCard } from 'lucide-react';
+import { Seller } from '@/types';
 
 export default async function SellersPage() {
-    const sellers = await getSellers();
+    const sellers: Seller[] = await getSellers() as any;
 
     return (
         <div className="space-y-6">
@@ -18,7 +19,7 @@ export default async function SellersPage() {
                 <CardHeader>
                     <CardTitle>Vendedores Cadastrados</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="overflow-x-auto">
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -30,7 +31,7 @@ export default async function SellersPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {sellers.map((seller) => (
+                            {sellers.map((seller: Seller) => (
                                 <TableRow key={seller.id}>
                                     <TableCell className="font-medium">{seller.name}</TableCell>
                                     <TableCell>

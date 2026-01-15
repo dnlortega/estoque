@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { ArrowUpRight, ArrowDownRight, RefreshCcw, ShoppingBag } from 'lucide-react';
+import { MovementLog } from '@/types';
 
 const typeConfig = {
     ENTRY: { label: 'Entrada', color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400', icon: ArrowUpRight },
@@ -14,7 +15,7 @@ const typeConfig = {
 };
 
 export default async function HistoryPage() {
-    const logs = await getLogs();
+    const logs: MovementLog[] = await getLogs() as any;
 
     return (
         <div className="space-y-6">
@@ -24,7 +25,7 @@ export default async function HistoryPage() {
                 <CardHeader>
                     <CardTitle>Logs Recentes</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="overflow-x-auto">
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -36,7 +37,7 @@ export default async function HistoryPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {logs.map((log) => {
+                            {logs.map((log: MovementLog) => {
                                 const config = typeConfig[log.type as keyof typeof typeConfig];
                                 const Icon = config.icon;
                                 return (

@@ -6,10 +6,11 @@ import { ConsignmentActions } from '@/components/consignment-actions';
 import { Badge } from '@/components/ui/badge';
 import { HandCoins } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
+import { Product, Seller } from '@/types';
 
 export default async function ConsignmentPage() {
-    const products = await getProducts();
-    const sellers = await getSellers();
+    const products: Product[] = await getProducts() as any;
+    const sellers: Seller[] = await getSellers() as any;
 
     return (
         <div className="space-y-6">
@@ -18,7 +19,7 @@ export default async function ConsignmentPage() {
                 <TransferDialog products={products} sellers={sellers} />
             </div>
 
-            {sellers.map((seller) => (
+            {sellers.map((seller: Seller) => (
                 <Card key={seller.id} className="overflow-hidden">
                     <CardHeader className="bg-muted/30 pb-4">
                         <div className="flex items-center justify-between">
@@ -27,11 +28,11 @@ export default async function ConsignmentPage() {
                                 <p className="text-sm text-muted-foreground">{seller.cpf} | {seller.phone}</p>
                             </div>
                             <Badge variant="outline" className="bg-background">
-                                {seller.consignments.reduce((acc, c) => acc + c.quantity, 0)} itens totais
+                                {seller.consignments.reduce((acc: number, c) => acc + c.quantity, 0)} itens totais
                             </Badge>
                         </div>
                     </CardHeader>
-                    <CardContent className="pt-6">
+                    <CardContent className="pt-6 overflow-x-auto">
                         <Table>
                             <TableHeader>
                                 <TableRow>
@@ -42,7 +43,7 @@ export default async function ConsignmentPage() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {seller.consignments.map((consignment) => (
+                                {seller.consignments.map((consignment: any) => (
                                     <TableRow key={consignment.id}>
                                         <TableCell className="font-medium">{consignment.product.name}</TableCell>
                                         <TableCell>{consignment.quantity}</TableCell>

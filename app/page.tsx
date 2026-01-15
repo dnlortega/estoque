@@ -6,14 +6,15 @@ import { Package, AlertTriangle, Users, TrendingUp } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import { CreateProductDialog } from '@/components/create-product-dialog';
 import { StockAdjustmentDialog } from '@/components/stock-adjustment-dialog';
+import { Product } from '@/types';
 
 export default async function DashboardPage() {
-  const products = await getProducts();
+  const products: Product[] = await getProducts() as any;
 
   const totalProducts = products.length;
-  const totalStock = products.reduce((acc, p) => acc + p.quantity, 0);
-  const lowStockCount = products.filter((p) => p.quantity < 5).length;
-  const totalValue = products.reduce((acc, p) => acc + p.price * p.quantity, 0);
+  const totalStock = products.reduce((acc: number, p: Product) => acc + p.quantity, 0);
+  const lowStockCount = products.filter((p: Product) => p.quantity < 5).length;
+  const totalValue = products.reduce((acc: number, p: Product) => acc + p.price * p.quantity, 0);
 
   return (
     <div className="space-y-6">
@@ -71,7 +72,7 @@ export default async function DashboardPage() {
         <CardHeader>
           <CardTitle>Estoque Geral</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
@@ -83,7 +84,7 @@ export default async function DashboardPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {products.map((product) => (
+              {products.map((product: Product) => (
                 <TableRow key={product.id}>
                   <TableCell className="font-medium">{product.name}</TableCell>
                   <TableCell>{formatCurrency(product.price)}</TableCell>
