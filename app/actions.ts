@@ -289,3 +289,12 @@ export async function getDashboardStats() {
         totalProducts: products.length,
     };
 }
+
+export async function deleteLog(id: string) {
+    await prisma.movementLog.delete({
+        where: { id },
+    });
+    revalidatePath('/historico');
+    revalidatePath('/');
+    revalidatePath('/consignacao');
+}

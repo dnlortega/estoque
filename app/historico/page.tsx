@@ -4,36 +4,47 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { ArrowUpRight, ArrowDownRight, RefreshCcw, ShoppingBag } from 'lucide-react';
+import { ArrowUpRight, ArrowDownRight, RefreshCcw, ShoppingBag, History } from 'lucide-react';
 import { MovementLog } from '@/types';
+import { DeleteLogButton } from '@/components/delete-log-button';
 
 const typeConfig = {
-    ENTRY: { label: 'Entrada', color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400', icon: ArrowUpRight },
-    TRANSFER: { label: 'Transferência', color: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400', icon: ArrowDownRight },
-    RETURN: { label: 'Devolução', color: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400', icon: RefreshCcw },
-    SALE: { label: 'Venda (Baixa)', color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400', icon: ShoppingBag },
+    ENTRY: { label: 'ENTRADA', color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400', icon: ArrowUpRight },
+    TRANSFER: { label: 'TRANSFERÊNCIA', color: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400', icon: ArrowDownRight },
+    RETURN: { label: 'DEVOLUÇÃO', color: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400', icon: RefreshCcw },
+    SALE: { label: 'VENDA (BAIXA)', color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400', icon: ShoppingBag },
 };
 
 export default async function HistoryPage() {
     const logs: MovementLog[] = await getLogs() as any;
 
     return (
-        <div className="space-y-6">
-            <h1 className="text-3xl font-bold tracking-tight">Histórico de Movimentações</h1>
+        <div className="space-y-6 uppercase">
+            <div className="flex flex-col gap-2">
+                <h1 className="text-3xl font-bold tracking-tight">HISTÓRICO DE MOVIMENTAÇÕES</h1>
+                <p className="text-muted-foreground text-sm font-medium">RASTREABILIDADE TOTAL DE ENTRADAS, SAÍDAS E VENDAS.</p>
+            </div>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle>Logs Recentes</CardTitle>
+            <Card className="border-none shadow-lg">
+                <CardHeader className="bg-muted/30 pb-4">
+                    <div className="flex items-center justify-between">
+                        <CardTitle className="text-sm font-black flex items-center gap-2">
+                            <History className="h-4 w-4" />
+                            LOGS RECENTES
+                        </CardTitle>
+                        <Badge variant="outline">{logs.length} REGISTROS</Badge>
+                    </div>
                 </CardHeader>
-                <CardContent className="overflow-x-auto">
+                <CardContent className="p-0 overflow-x-auto">
                     <Table>
-                        <TableHeader>
+                        <TableHeader className="bg-muted/50">
                             <TableRow>
-                                <TableHead>Data/Hora</TableHead>
-                                <TableHead>Operação</TableHead>
-                                <TableHead>Produto</TableHead>
-                                <TableHead>Quantidade</TableHead>
-                                <TableHead>Envolvido</TableHead>
+                                <TableHead className="text-[10px] font-black h-10 px-6">DATA/HORA</TableHead>
+                                <TableHead className="text-[10px] font-black h-10 text-center">OPERAÇÃO</TableHead>
+                                <TableHead className="text-[10px] font-black h-10">PRODUTO</TableHead>
+                                <TableHead className="text-[10px] font-black h-10 text-center">QUANTIDADE</TableHead>
+                                <TableHead className="text-[10px] font-black h-10">ENVOLVIDO</TableHead>
+                                <TableHead className="text-[10px] font-black h-10 text-right pr-6">AÇÕES</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -41,38 +52,52 @@ export default async function HistoryPage() {
                                 const config = typeConfig[log.type as keyof typeof typeConfig];
                                 const Icon = config.icon;
                                 return (
-                                    <TableRow key={log.id}>
-                                        <TableCell className="text-sm">
-                                            {format(new Date(log.timestamp), "dd/MM/yyyy HH:mm", { locale: ptBR })}
+                                    <TableRow key={log.id} className="hover:bg-muted/20 transition-colors group">
+                                        <TableCell className="text-[10px] font-mono px-6 py-4 opacity-70">
+                                            {format(new Date(log.timestamp), "dd/MM/yyyy | HH:mm", { locale: ptBR })}
                                         </TableCell>
-                                        <TableCell>
-                                            <Badge className={`gap-1 font-medium ${config.color}`} variant="outline">
+                                        <TableCell className="text-center py-4">
+                                            <Badge className={`gap-1.5 font-bold text-[9px] px-2 py-0.5 border-none shadow-sm ${config.color}`}>
                                                 <Icon className="h-3 w-3" />
                                                 {config.label}
                                             </Badge>
                                         </TableCell>
-                                        <TableCell className="font-medium">{log.product.name}</TableCell>
-                                        <TableCell>
+                                        <TableCell className="font-black text-xs py-4">
+                                            <div className="flex flex-col">
+                                                <span>{log.product.name}</span>
+                                                <span className="text-[9px] opacity-50 font-medium">TAM: {log.product.size || '-'}</span>
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="text-center py-4">
                                             {log.type === 'TRANSFER' || log.type === 'SALE' ? (
-                                                <span className="text-red-500">-{log.quantity}</span>
+                                                <span className="text-red-500 font-bold text-sm">-{log.quantity}</span>
                                             ) : (
-                                                <span className="text-green-600">+{log.quantity}</span>
+                                                <span className="text-green-600 font-bold text-sm">+{log.quantity}</span>
                                             )}
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell className="py-4">
                                             {log.seller ? (
-                                                <span className="text-sm font-medium">{log.seller.name}</span>
+                                                <div className="flex flex-col">
+                                                    <span className="text-[10px] font-bold">{log.seller.name}</span>
+                                                    <span className="text-[9px] opacity-50 font-mono">VENDEDOR(A)</span>
+                                                </div>
                                             ) : (
-                                                <span className="text-sm text-muted-foreground">Estoque Central</span>
+                                                <div className="flex flex-col">
+                                                    <span className="text-[10px] font-bold">ESTOQUE CENTRAL</span>
+                                                    <span className="text-[9px] opacity-50 font-mono">ADMINISTRAÇÃO</span>
+                                                </div>
                                             )}
+                                        </TableCell>
+                                        <TableCell className="text-right pr-6 py-4">
+                                            <DeleteLogButton logId={log.id} />
                                         </TableCell>
                                     </TableRow>
                                 );
                             })}
                             {logs.length === 0 && (
                                 <TableRow>
-                                    <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
-                                        Nenhuma movimentação registrada.
+                                    <TableCell colSpan={6} className="h-48 text-center text-muted-foreground italic text-xs uppercase opacity-30">
+                                        NENHUMA MOVIMENTAÇÃO REGISTRADA NO SISTEMA.
                                     </TableCell>
                                 </TableRow>
                             )}
