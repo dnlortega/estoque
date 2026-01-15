@@ -147,56 +147,103 @@ export default async function DashboardPage() {
             <Badge variant="outline">{products.length} CATEGORIAS</Badge>
           </div>
         </CardHeader>
-        <CardContent className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="text-[10px] uppercase">PRODUTO</TableHead>
-                <TableHead className="text-[10px] uppercase">TAMANHO</TableHead>
-                <TableHead className="text-[10px] uppercase">COR</TableHead>
-                <TableHead className="text-[10px] uppercase">PREÇO</TableHead>
-                <TableHead className="text-[10px] uppercase">QNTD. CENTRAL</TableHead>
-                <TableHead className="text-[10px] uppercase">STATUS</TableHead>
-                <TableHead className="text-right text-[10px] uppercase">AÇÕES</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {products.map((product: Product) => (
-                <TableRow key={product.id}>
-                  <TableCell className="font-bold text-xs uppercase">{product.name}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className="text-[10px]">{product.size || '-'}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="secondary" className="text-[10px] uppercase font-bold">{product.color || '-'}</Badge>
-                  </TableCell>
-                  <TableCell className="text-xs">{formatCurrency(product.price)}</TableCell>
-                  <TableCell className="text-xs">
-                    <span className={product.quantity < 5 ? "text-red-500 font-black" : ""}>
-                      {product.quantity}
-                    </span>
-                  </TableCell>
-                  <TableCell>
+        <CardContent>
+          {/* MOBILE VIEW (CARDS) - NO SCROLL */}
+          <div className="grid grid-cols-1 gap-4 md:hidden">
+            {products.map((product: Product) => (
+              <div key={product.id} className="bg-muted/40 rounded-lg p-4 space-y-3 border border-border/50">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="space-y-1">
+                    <p className="font-black text-sm uppercase leading-tight">{product.name}</p>
+                    <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                      <Badge variant="outline" className="h-5 px-1.5">{product.size || 'UN'}</Badge>
+                      {product.color && <Badge variant="secondary" className="h-5 px-1.5 bg-background">{product.color}</Badge>}
+                    </div>
+                  </div>
+                  <div>
                     {product.quantity < 5 ? (
-                      <Badge variant="destructive" className="text-[9px] font-black uppercase">BAIXO ESTOQUE</Badge>
+                      <Badge variant="destructive" className="text-[9px] font-black uppercase">BAIXO</Badge>
                     ) : (
-                      <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-400 text-[9px] font-black uppercase">EM DIA</Badge>
+                      <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-400 text-[9px] font-black uppercase">OK</Badge>
                     )}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <StockAdjustmentDialog product={product} />
-                  </TableCell>
-                </TableRow>
-              ))}
-              {products.length === 0 && (
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 py-2 border-y border-border/50">
+                  <div className="flex flex-col">
+                    <span className="text-[9px] uppercase text-muted-foreground font-bold">PREÇO</span>
+                    <span className="text-sm font-bold">{formatCurrency(product.price)}</span>
+                  </div>
+                  <div className="flex flex-col text-right">
+                    <span className="text-[9px] uppercase text-muted-foreground font-bold">ESTOQUE</span>
+                    <span className={`text-sm font-black ${product.quantity < 5 ? "text-red-500" : ""}`}>{product.quantity}</span>
+                  </div>
+                </div>
+
+                <div className="pt-1">
+                  <StockAdjustmentDialog product={product} />
+                </div>
+              </div>
+            ))}
+            {products.length === 0 && (
+              <div className="text-center py-8 text-muted-foreground text-xs uppercase">
+                Nenhum produto em estoque
+              </div>
+            )}
+          </div>
+
+          {/* DESKTOP VIEW (TABLE) */}
+          <div className="hidden md:block overflow-x-auto">
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={7} className="h-24 text-center text-muted-foreground uppercase text-xs">
-                    NENHUM PRODUTO CADASTRADO NO ESTOQUE CENTRAL.
-                  </TableCell>
+                  <TableHead className="text-[10px] uppercase">PRODUTO</TableHead>
+                  <TableHead className="text-[10px] uppercase">TAMANHO</TableHead>
+                  <TableHead className="text-[10px] uppercase">COR</TableHead>
+                  <TableHead className="text-[10px] uppercase">PREÇO</TableHead>
+                  <TableHead className="text-[10px] uppercase">QNTD. CENTRAL</TableHead>
+                  <TableHead className="text-[10px] uppercase">STATUS</TableHead>
+                  <TableHead className="text-right text-[10px] uppercase">AÇÕES</TableHead>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {products.map((product: Product) => (
+                  <TableRow key={product.id}>
+                    <TableCell className="font-bold text-xs uppercase">{product.name}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="text-[10px]">{product.size || '-'}</Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="secondary" className="text-[10px] uppercase font-bold">{product.color || '-'}</Badge>
+                    </TableCell>
+                    <TableCell className="text-xs">{formatCurrency(product.price)}</TableCell>
+                    <TableCell className="text-xs">
+                      <span className={product.quantity < 5 ? "text-red-500 font-black" : ""}>
+                        {product.quantity}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      {product.quantity < 5 ? (
+                        <Badge variant="destructive" className="text-[9px] font-black uppercase">BAIXO ESTOQUE</Badge>
+                      ) : (
+                        <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-400 text-[9px] font-black uppercase">EM DIA</Badge>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <StockAdjustmentDialog product={product} />
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {products.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={7} className="h-24 text-center text-muted-foreground uppercase text-xs">
+                      NENHUM PRODUTO CADASTRADO NO ESTOQUE CENTRAL.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </div>

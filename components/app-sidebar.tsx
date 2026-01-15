@@ -69,7 +69,6 @@ export function AppSidebar() {
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>
-                    <SidebarGroupLabel className="uppercase font-bold text-[10px]">MENU PRINCIPAL</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {items.map((item) => (
@@ -79,9 +78,8 @@ export function AppSidebar() {
                                         isActive={pathname === item.url}
                                         tooltip={item.title.toUpperCase()}
                                     >
-                                        <Link href={item.url}>
+                                        <Link href={item.url} className="flex justify-center">
                                             <item.icon />
-                                            <span className="uppercase font-bold text-xs tracking-wide">{item.title}</span>
                                         </Link>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>

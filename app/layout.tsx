@@ -1,10 +1,16 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
+import { BottomNav } from "@/components/bottom-nav";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Inter } from "next/font/google";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -17,10 +23,25 @@ export const metadata: Metadata = {
     apple: "/logo.png",
     icon: "/logo.png",
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Estoque+",
+  },
+  formatDetection: {
+    telephone: false,
+  },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#000000",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+  ],
 };
 
 export default function RootLayout({
@@ -31,7 +52,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <body
-        className={`font-sans antialiased selection:bg-primary/10`}
+        className={`${inter.variable} font-sans antialiased selection:bg-primary/10`}
       >
         <ThemeProvider
           attribute="class"
@@ -39,26 +60,25 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <SidebarProvider>
-            <div className="flex min-h-screen w-full bg-background text-foreground transition-colors duration-300">
-              <AppSidebar />
-              <div className="flex flex-col flex-1 min-w-0">
-                <header className="flex h-16 shrink-0 items-center justify-between px-4 md:px-8 border-b transition-colors bg-card/50 backdrop-blur-sm sticky top-0 z-10 uppercase font-black tracking-widest text-[10px]">
-                  <div className="flex items-center gap-4">
-                    <SidebarTrigger className="h-9 w-9" />
-                  </div>
-                  <div className="flex items-center gap-4 text-xs font-black">
-                    <span className="hidden sm:block opacity-50">GERENCIAMENTO PROFISSIONAL</span>
-                    <ThemeToggle />
-                  </div>
-                </header>
-                <main className="flex-1 overflow-auto p-4 md:p-8">
-                  {children}
-                </main>
-              </div>
+          <div className="flex min-h-screen w-full bg-background text-foreground transition-colors duration-300">
+            <div className="flex flex-col flex-1 min-w-0 pb-20">
+              <header className="flex h-16 shrink-0 items-center justify-between px-4 md:px-8 border-b transition-colors bg-card/50 backdrop-blur-sm sticky top-0 z-10 uppercase font-black tracking-widest text-[10px]">
+                <div className="flex items-center gap-4">
+                  <span className="text-xs font-black text-primary">ESTOQUE+</span>
+                </div>
+                <div className="flex items-center gap-4 text-xs font-black">
+                  <span className="hidden sm:block opacity-50">GERENCIAMENTO PROFISSIONAL</span>
+                  <ThemeToggle />
+                </div>
+              </header>
+              <main className="flex-1 overflow-auto p-4 md:p-8">
+                {children}
+              </main>
             </div>
-            <Toaster position="top-right" />
-          </SidebarProvider>
+
+            <BottomNav />
+          </div>
+          <Toaster position="top-right" />
         </ThemeProvider>
       </body>
     </html>
