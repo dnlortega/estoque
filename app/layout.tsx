@@ -1,5 +1,4 @@
-import { Inter } from "next/font/google";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
@@ -7,17 +6,21 @@ import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
-
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export const metadata: Metadata = {
   title: "ESTOQUE+ | SISTEMA DE GESTÃO DE ESTOQUE E CONSIGNAÇÃO",
   description: "GERENCIE SEU ESTOQUE E CONSIGNAÇÕES DE FORMA PROFISSIONAL",
+  manifest: "/manifest.json",
+  icons: {
+    apple: "/logo.png",
+    icon: "/logo.png",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#000000",
 };
 
 export default function RootLayout({
@@ -28,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <body
-        className={`${inter.variable} font-sans antialiased selection:bg-primary/10`}
+        className={`font-sans antialiased selection:bg-primary/10`}
       >
         <ThemeProvider
           attribute="class"

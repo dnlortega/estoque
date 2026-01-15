@@ -10,6 +10,7 @@ import {
     TrendingUp,
     Settings,
 } from 'lucide-react';
+import Image from 'next/image';
 
 import {
     Sidebar,
@@ -61,8 +62,8 @@ export function AppSidebar() {
         <Sidebar collapsible="icon">
             <SidebarHeader className="flex items-center justify-between p-4">
                 <div className="flex items-center gap-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                        <Package className="h-5 w-5" />
+                    <div className="relative h-10 w-10 overflow-hidden rounded-lg bg-white/10 p-1">
+                        <Image src="/logo.png" alt="Estoque+" width={40} height={40} className="object-contain" />
                     </div>
                 </div>
             </SidebarHeader>
