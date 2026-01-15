@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { CreateProductDialog } from '@/components/create-product-dialog';
 import { StockAdjustmentDialog } from '@/components/stock-adjustment-dialog';
+import { DeleteProductDialog } from '@/components/delete-product-dialog';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/utils';
 import { Product } from '@/types';
@@ -49,8 +50,9 @@ export default async function ProductsPage() {
                                             <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-400">Em dia</Badge>
                                         )}
                                     </TableCell>
-                                    <TableCell className="text-right">
+                                    <TableCell className="text-right flex justify-end gap-2">
                                         <StockAdjustmentDialog product={product} />
+                                        <DeleteProductDialog productId={product.id} productName={product.name} />
                                     </TableCell>
                                 </TableRow>
                             ))}

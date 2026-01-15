@@ -44,6 +44,14 @@ export async function adjustStock(productId: string, delta: number) {
     return product;
 }
 
+export async function deleteProduct(productId: string) {
+    await prisma.product.delete({
+        where: { id: productId },
+    });
+    revalidatePath('/produtos');
+    revalidatePath('/');
+}
+
 export async function getSellers() {
     return await prisma.seller.findMany({
         orderBy: { name: 'asc' },
@@ -156,6 +164,17 @@ export async function sellFromSeller(productId: string, sellerId: string, quanti
         },
     });
 
+    // 3. Deletar a consignação se a quantidade chegar a 0
+    const updatedConsignment = await prisma.consignment.findUnique({
+        where: { sellerId_productId: { sellerId, productId } }
+    });
+
+    if (updatedConsignment && updatedConsignment.quantity <= 0) {
+        await prisma.consignment.delete({
+            where: { sellerId_productId: { sellerId, productId } }
+        });
+    }
+
     revalidatePath('/consignacao');
     revalidatePath('/historico');
 }
@@ -169,4 +188,31 @@ export async function getLogs() {
         },
         take: 100,
     });
+}
+
+export async function getDashboardStats() {
+    const products = await prisma.product.findMany();
+    const sales = await prisma.movementLog.findMany({
+        where: { type: 'SALE' },
+        include: { product: true },
+    });
+
+    const totalSalesValue = sales.reduce((acc: number, sale: any) => acc + (sale.quantity * sale.product.price), 0);
+
+    const consignments = await prisma.consignment.findMany({
+        include: { product: true }
+    });
+    const totalInConsignment = consignments.reduce((acc: number, c: any) => acc + c.quantity, 0);
+    const totalInConsignmentValue = consignments.reduce((acc: number, c: any) => acc + (c.quantity * c.product.price), 0);
+
+    const centralStockValue = products.reduce((acc: number, p: any) => acc + (p.quantity * p.price), 0);
+
+    return {
+        totalSalesValue,
+        totalInConsignment,
+        totalInConsignmentValue,
+        centralStock: products.reduce((acc: number, p: any) => acc + p.quantity, 0),
+        centralStockValue,
+        totalProducts: products.length,
+    };
 }

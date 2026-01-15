@@ -27,9 +27,14 @@ export default async function ConsignmentPage() {
                                 <CardTitle className="text-xl">{seller.name}</CardTitle>
                                 <p className="text-sm text-muted-foreground">{seller.cpf} | {seller.phone}</p>
                             </div>
-                            <Badge variant="outline" className="bg-background">
-                                {seller.consignments.reduce((acc: number, c) => acc + c.quantity, 0)} itens totais
-                            </Badge>
+                            <div className="flex flex-col items-end gap-2">
+                                <Badge variant="outline" className="bg-background">
+                                    {seller.consignments.reduce((acc: number, c) => acc + c.quantity, 0)} itens totais
+                                </Badge>
+                                <span className="text-sm font-semibold text-green-600 dark:text-green-400">
+                                    {formatCurrency(seller.consignments.reduce((acc: number, c) => acc + (c.quantity * c.product.price), 0))} em posse
+                                </span>
+                            </div>
                         </div>
                     </CardHeader>
                     <CardContent className="pt-6 overflow-x-auto">

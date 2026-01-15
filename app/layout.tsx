@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: "Estoque+ | Sistema de Gestão de Estoque e Consignação",
   description: "Gerencie seu estoque e consignações de forma profissional",
