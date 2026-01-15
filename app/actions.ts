@@ -44,11 +44,30 @@ export async function adjustStock(productId: string, delta: number) {
     return product;
 }
 
-export async function deleteProduct(productId: string) {
-    await prisma.product.delete({
+export async function getProductWithMovements(productId: string) {
+    return await prisma.product.findUnique({
         where: { id: productId },
+        include: {
+            movements: {
+                orderBy: { timestamp: 'desc' },
+                include: { seller: true }
+            },
+            consignments: {
+                include: { seller: true }
+            }
+        }
     });
+}
+
+export async function deleteProductAndMovements(productId: string) {
+    // Deletar em ordem para respeitar chaves estrangeiras
+    await prisma.movementLog.deleteMany({ where: { productId } });
+    await prisma.consignment.deleteMany({ where: { productId } });
+    await prisma.product.delete({ where: { id: productId } });
+
     revalidatePath('/produtos');
+    revalidatePath('/historico');
+    revalidatePath('/consignacao');
     revalidatePath('/');
 }
 
