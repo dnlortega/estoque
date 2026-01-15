@@ -74,8 +74,8 @@ export function CreateSellerDialog() {
                 </DialogHeader>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
                     <div className="space-y-2">
-                        <Label htmlFor="name">Nome Completo</Label>
-                        <Input id="name" {...form.register('name')} placeholder="Ex: João Silva" />
+                        <Label htmlFor="name">NOME COMPLETO</Label>
+                        <Input id="name" {...form.register('name')} placeholder="EX: JOÃO SILVA" />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
@@ -91,7 +91,7 @@ export function CreateSellerDialog() {
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="phone">Celular</Label>
+                            <Label htmlFor="phone">CELULAR</Label>
                             <Input
                                 id="phone"
                                 {...form.register('phone')}
@@ -104,14 +104,14 @@ export function CreateSellerDialog() {
                         </div>
                     </div>
                     <div className="space-y-2">
-                        <Label htmlFor="address">Endereço</Label>
-                        <Input id="address" {...form.register('address')} placeholder="Rua, Número, Bairro, Cidade" />
+                        <Label htmlFor="address">ENDEREÇO</Label>
+                        <Input id="address" {...form.register('address')} placeholder="RUA, NÚMERO, BAIRRO, CIDADE" />
                     </div>
                     <DialogFooter>
                         <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-                            Cancelar
+                            CANCELAR
                         </Button>
-                        <Button type="submit">Cadastrar</Button>
+                        <Button type="submit">CADASTRAR</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

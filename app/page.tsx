@@ -2,24 +2,26 @@ import { getProducts, getDashboardStats } from '@/app/actions';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Package, AlertTriangle, Users, TrendingUp, Wallet, HandCoins } from 'lucide-react';
+import { Package, AlertTriangle, Wallet, HandCoins, Info } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import { CreateProductDialog } from '@/components/create-product-dialog';
 import { StockAdjustmentDialog } from '@/components/stock-adjustment-dialog';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Product } from '@/types';
 
 export default async function DashboardPage() {
   const products: Product[] = await getProducts() as any;
   const stats = await getDashboardStats();
 
-  const lowStockCount = products.filter((p: Product) => p.quantity < 5).length;
+  const lowStockProducts = products.filter((p: Product) => p.quantity < 5);
+  const lowStockCount = lowStockProducts.length;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 uppercase">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Painel de Controle</h1>
-          <p className="text-muted-foreground">Visão geral do seu estoque e finanças.</p>
+          <h1 className="text-3xl font-bold tracking-tight">PAINEL DE CONTROLE</h1>
+          <p className="text-muted-foreground text-sm">VISÃO GERAL DO SEU ESTOQUE E FINANÇAS.</p>
         </div>
         <div className="flex items-center gap-2">
           <CreateProductDialog />
@@ -27,94 +29,148 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {/* Valor em Caixa */}
+        {/* VALOR EM CAIXA */}
         <Card className="border-green-200 bg-green-50/50 dark:bg-green-950/10">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Valor em Caixa</CardTitle>
+            <CardTitle className="text-xs font-bold uppercase">VALOR EM CAIXA</CardTitle>
             <Wallet className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-700 dark:text-green-400">
+            <div className="text-2xl font-black text-green-700 dark:text-green-400">
               {formatCurrency(stats.totalSalesValue)}
             </div>
-            <p className="text-xs text-muted-foreground pt-1">Total de vendas realizadas</p>
+            <p className="text-[10px] text-muted-foreground pt-1">TOTAL DE VENDAS REALIZADAS</p>
           </CardContent>
         </Card>
 
-        {/* Itens em Consignação */}
+        {/* EM CONSIGNAÇÃO */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Em Consignação</CardTitle>
+            <CardTitle className="text-xs font-bold uppercase">EM CONSIGNAÇÃO</CardTitle>
             <HandCoins className="h-4 w-4 text-purple-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalInConsignment}</div>
-            <p className="text-xs text-muted-foreground pt-1">
-              {formatCurrency(stats.totalInConsignmentValue)} em mercadoria
+            <div className="text-2xl font-black">{stats.totalInConsignment}</div>
+            <p className="text-[10px] text-muted-foreground pt-1">
+              {formatCurrency(stats.totalInConsignmentValue)} EM MERCADORIA
             </p>
           </CardContent>
         </Card>
 
-        {/* Estoque Central */}
+        {/* ESTOQUE CENTRAL */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Estoque Central</CardTitle>
+            <CardTitle className="text-xs font-bold uppercase">ESTOQUE CENTRAL</CardTitle>
             <Package className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.centralStock}</div>
-            <p className="text-xs text-muted-foreground pt-1">
-              Total de produtos físicos
+            <div className="text-2xl font-black">{stats.centralStock}</div>
+            <p className="text-[10px] text-muted-foreground pt-1">
+              TOTAL DE PRODUTOS FÍSICOS
             </p>
           </CardContent>
         </Card>
 
-        {/* Alertas de Estoque */}
-        <Card className={lowStockCount > 0 ? "border-red-200 bg-red-50 dark:bg-red-950/20" : ""}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Alertas de Estoque</CardTitle>
-            <AlertTriangle className={`h-4 w-4 ${lowStockCount > 0 ? "text-red-500" : "text-muted-foreground"}`} />
-          </CardHeader>
-          <CardContent>
-            <div className={`text-2xl font-bold ${lowStockCount > 0 ? "text-red-500" : ""}`}>{lowStockCount}</div>
-            <p className="text-xs text-muted-foreground pt-1">Produtos com estoque baixo</p>
-          </CardContent>
-        </Card>
+        {/* ALERTAS DE ESTOQUE COM POPOVER */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <Card className={`cursor-pointer transition-all hover:ring-2 hover:ring-primary/20 ${lowStockCount > 0 ? "border-red-200 bg-red-50 dark:bg-red-950/20" : ""}`}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-xs font-bold uppercase">ALERTAS DE ESTOQUE</CardTitle>
+                <AlertTriangle className={`h-4 w-4 ${lowStockCount > 0 ? "text-red-500 animate-pulse" : "text-muted-foreground"}`} />
+              </CardHeader>
+              <CardContent>
+                <div className={`text-2xl font-black ${lowStockCount > 0 ? "text-red-500" : ""}`}>
+                  {lowStockCount}
+                </div>
+                <p className="text-[10px] text-muted-foreground pt-1 flex items-center gap-1">
+                  PRODUTOS BAIXOS <Info className="h-3 w-3" />
+                </p>
+              </CardContent>
+            </Card>
+          </PopoverTrigger>
+          <PopoverContent className="w-[400px] p-0 shadow-2xl border-red-100" align="end">
+            <div className="bg-red-500 p-3 text-white">
+              <h4 className="font-black text-xs uppercase flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4" />
+                PRODUTOS COM ESTOQUE BAIXO (ABAIXO DE 5)
+              </h4>
+            </div>
+            <div className="max-h-[300px] overflow-y-auto">
+              <Table>
+                <TableHeader className="bg-muted/50">
+                  <TableRow>
+                    <TableHead className="text-[10px] h-8 uppercase">PRODUTO</TableHead>
+                    <TableHead className="text-[10px] h-8 uppercase text-center">TAM.</TableHead>
+                    <TableHead className="text-[10px] h-8 uppercase text-right pr-4">QNTD.</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {lowStockCount === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={3} className="text-center py-6 text-[10px] text-muted-foreground uppercase">
+                        NENHUM ALERTA NO MOMENTO
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    lowStockProducts.map((p: Product) => (
+                      <TableRow key={p.id} className="hover:bg-red-50/30">
+                        <TableCell className="text-[10px] font-bold py-2 uppercase leading-tight">
+                          {p.name}
+                        </TableCell>
+                        <TableCell className="text-center py-2">
+                          <Badge variant="outline" className="text-[9px] h-4 px-1">{p.size || '-'}</Badge>
+                        </TableCell>
+                        <TableCell className="text-right pr-4 py-2 font-black text-red-600">
+                          {p.quantity}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
 
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>Estoque Central Disponível</CardTitle>
-            <Badge variant="outline">{products.length} Categorias</Badge>
+            <CardTitle className="text-sm font-black uppercase">ESTOQUE CENTRAL DISPONÍVEL</CardTitle>
+            <Badge variant="outline">{products.length} CATEGORIAS</Badge>
           </div>
         </CardHeader>
         <CardContent className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Produto</TableHead>
-                <TableHead>Preço</TableHead>
-                <TableHead>Qntd. Central</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Ações</TableHead>
+                <TableHead className="text-[10px] uppercase">PRODUTO</TableHead>
+                <TableHead className="text-[10px] uppercase">TAMANHO</TableHead>
+                <TableHead className="text-[10px] uppercase">PREÇO</TableHead>
+                <TableHead className="text-[10px] uppercase">QNTD. CENTRAL</TableHead>
+                <TableHead className="text-[10px] uppercase">STATUS</TableHead>
+                <TableHead className="text-right text-[10px] uppercase">AÇÕES</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {products.map((product: Product) => (
                 <TableRow key={product.id}>
-                  <TableCell className="font-medium">{product.name}</TableCell>
-                  <TableCell>{formatCurrency(product.price)}</TableCell>
+                  <TableCell className="font-bold text-xs uppercase">{product.name}</TableCell>
                   <TableCell>
-                    <span className={product.quantity < 5 ? "text-red-500 font-bold" : ""}>
+                    <Badge variant="outline" className="text-[10px]">{product.size || '-'}</Badge>
+                  </TableCell>
+                  <TableCell className="text-xs">{formatCurrency(product.price)}</TableCell>
+                  <TableCell className="text-xs">
+                    <span className={product.quantity < 5 ? "text-red-500 font-black" : ""}>
                       {product.quantity}
                     </span>
                   </TableCell>
                   <TableCell>
                     {product.quantity < 5 ? (
-                      <Badge variant="destructive">Baixo Estoque</Badge>
+                      <Badge variant="destructive" className="text-[9px] font-black uppercase">BAIXO ESTOQUE</Badge>
                     ) : (
-                      <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-400">Em dia</Badge>
+                      <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-400 text-[9px] font-black uppercase">EM DIA</Badge>
                     )}
                   </TableCell>
                   <TableCell className="text-right">
@@ -124,8 +180,8 @@ export default async function DashboardPage() {
               ))}
               {products.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
-                    Nenhum produto cadastrado no estoque central.
+                  <TableCell colSpan={6} className="h-24 text-center text-muted-foreground uppercase text-xs">
+                    NENHUM PRODUTO CADASTRADO NO ESTOQUE CENTRAL.
                   </TableCell>
                 </TableRow>
               )}

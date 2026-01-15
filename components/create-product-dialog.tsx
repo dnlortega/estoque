@@ -20,18 +20,27 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import { createProduct } from '@/app/actions';
 
 const productSchema = z.object({
-    name: z.string().min(1, 'Nome é obrigatório'),
-    price: z.string().refine((v) => !isNaN(parseFloat(v)) && parseFloat(v) > 0, 'Preço deve ser maior que zero'),
-    quantity: z.string().refine((v) => !isNaN(parseInt(v)) && parseInt(v) >= 0, 'Quantidade não pode ser negativa'),
+    name: z.string().min(1, 'NOME É OBRIGATÓRIO'),
+    price: z.string().refine((v) => !isNaN(parseFloat(v)) && parseFloat(v) > 0, 'PREÇO DEVE SER MAIOR QUE ZERO'),
+    quantity: z.string().refine((v) => !isNaN(parseInt(v)) && parseInt(v) >= 0, 'QUANTIDADE NÃO PODE SER NEGATIVA'),
+    size: z.string().min(1, 'TAMANHO É OBRIGATÓRIO'),
 });
 
 type ProductFormValues = {
     name: string;
     price: string;
     quantity: string;
+    size: string;
 };
 
 export function CreateProductDialog() {
@@ -41,8 +50,9 @@ export function CreateProductDialog() {
         resolver: zodResolver(productSchema),
         defaultValues: {
             name: '',
-            price: '0' as any,
-            quantity: '0' as any,
+            price: '0',
+            quantity: '0',
+            size: '',
         },
     });
 
@@ -52,13 +62,14 @@ export function CreateProductDialog() {
                 name: data.name,
                 price: parseFloat(data.price),
                 quantity: parseInt(data.quantity),
+                size: data.size,
             });
-            toast.success('Produto criado com sucesso!');
+            toast.success('PRODUTO CRIADO COM SUCESSO!');
             setOpen(false);
             form.reset();
             router.refresh();
         } catch (error) {
-            toast.error('Erro ao criar produto.');
+            toast.error('ERRO AO CRIAR PRODUTO.');
         }
     }
 
@@ -67,45 +78,66 @@ export function CreateProductDialog() {
             <DialogTrigger asChild>
                 <Button className="gap-2">
                     <Plus className="h-4 w-4" />
-                    Novo Produto
+                    NOVO PRODUTO
                 </Button>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Cadastrar Novo Produto</DialogTitle>
+                    <DialogTitle>CADASTRAR NOVO PRODUTO</DialogTitle>
                     <DialogDescription>
-                        Insira os detalhes do novo produto para o estoque central.
+                        INSIRA OS DETALHES DO NOVO PRODUTO PARA O ESTOQUE CENTRAL.
                     </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
                     <div className="space-y-2">
-                        <Label htmlFor="name">Nome do Produto</Label>
-                        <Input id="name" {...form.register('name')} placeholder="Ex: Camiseta Branca" />
+                        <Label htmlFor="name">NOME DO PRODUTO</Label>
+                        <Input id="name" {...form.register('name')} placeholder="EX: CONJUNTO RENDA PRETO" />
                         {form.formState.errors.name && (
                             <p className="text-sm text-red-500">{form.formState.errors.name.message}</p>
                         )}
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+
+                    <div className="grid grid-cols-3 gap-4">
                         <div className="space-y-2">
-                            <Label htmlFor="price">Preço de Venda (R$)</Label>
-                            <Input id="price" type="number" step="0.01" {...form.register('price')} />
-                            {form.formState.errors.price && (
-                                <p className="text-sm text-red-500">{form.formState.errors.price.message}</p>
+                            <Label htmlFor="size">TAMANHO</Label>
+                            <Select
+                                onValueChange={(value) => form.setValue('size', value)}
+                                value={form.watch('size')}
+                            >
+                                <SelectTrigger id="size">
+                                    <SelectValue placeholder="TAM." />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="P">P</SelectItem>
+                                    <SelectItem value="M">M</SelectItem>
+                                    <SelectItem value="G">G</SelectItem>
+                                    <SelectItem value="GG">GG</SelectItem>
+                                    <SelectItem value="XG">XG</SelectItem>
+                                    <SelectItem value="ÚNICO">ÚNICO</SelectItem>
+                                    <SelectItem value="42">42</SelectItem>
+                                    <SelectItem value="44">44</SelectItem>
+                                    <SelectItem value="46">46</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            {form.formState.errors.size && (
+                                <p className="text-xs text-red-500">{form.formState.errors.size.message}</p>
                             )}
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="quantity">Quantidade Inicial</Label>
+                            <Label htmlFor="price">PREÇO (R$)</Label>
+                            <Input id="price" type="number" step="0.01" {...form.register('price')} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="quantity">QNTD.</Label>
                             <Input id="quantity" type="number" {...form.register('quantity')} />
-                            {form.formState.errors.quantity && (
-                                <p className="text-sm text-red-500">{form.formState.errors.quantity.message}</p>
-                            )}
                         </div>
                     </div>
+
                     <DialogFooter>
                         <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-                            Cancelar
+                            CANCELAR
                         </Button>
-                        <Button type="submit">Salvar Produto</Button>
+                        <Button type="submit">SALVAR PRODUTO</Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

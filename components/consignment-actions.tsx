@@ -40,24 +40,24 @@ export function ConsignmentActions({
     async function handleAction() {
         const qty = parseInt(amount);
         if (isNaN(qty) || qty <= 0 || qty > currentQuantity) {
-            toast.error('Quantidade inválida.');
+            toast.error('QUANTIDADE INVÁLIDA.');
             return;
         }
 
         try {
             if (mode === 'RETURN') {
                 await returnFromSeller(productId, sellerId, qty);
-                toast.success(`${qty} unidade(s) de ${productName} retornadas ao estoque.`);
+                toast.success(`${qty} UNIDADE(S) DE ${productName} RETORNADAS AO ESTOQUE.`);
             } else if (mode === 'SALE') {
                 await sellFromSeller(productId, sellerId, qty);
-                toast.success(`Venda de ${qty} unidade(s) de ${productName} registrada!`);
+                toast.success(`VENDA DE ${qty} UNIDADE(S) DE ${productName} REGISTRADA!`);
             }
             setOpen(false);
             setMode(null);
             setAmount('1');
             router.refresh();
         } catch (error) {
-            toast.error('Erro ao processar ação.');
+            toast.error('ERRO AO PROCESSAR AÇÃO.');
         }
     }
 
@@ -68,37 +68,37 @@ export function ConsignmentActions({
                     <Button
                         variant="outline"
                         size="sm"
-                        className="h-8 gap-1"
+                        className="h-8 gap-1 text-[10px] uppercase font-bold"
                         onClick={() => setMode('RETURN')}
                     >
-                        <Undo2 className="h-3.5 w-3.5" />
-                        Devolver
+                        <Undo2 className="h-3 w-3" />
+                        RETORNAR
                     </Button>
                 </DialogTrigger>
                 <DialogTrigger asChild>
                     <Button
                         variant="secondary"
                         size="sm"
-                        className="h-8 gap-1 bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400"
+                        className="h-8 gap-1 text-[10px] uppercase font-bold bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400"
                         onClick={() => setMode('SALE')}
                     >
-                        <Banknote className="h-3.5 w-3.5" />
-                        Baixa Venda
+                        <Banknote className="h-3 w-3" />
+                        VENDA
                     </Button>
                 </DialogTrigger>
             </div>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>
-                        {mode === 'RETURN' ? 'Devolver Produto' : 'Registrar Venda'}
+                    <DialogTitle className="uppercase">
+                        {mode === 'RETURN' ? 'RETORNAR PRODUTO' : 'REGISTRAR VENDA'}
                     </DialogTitle>
-                    <DialogDescription>
-                        {productName} - Quantidade em posse do vendedor: <strong>{currentQuantity}</strong>
+                    <DialogDescription className="uppercase">
+                        {productName} - QUANTIDADE EM POSSE: <strong>{currentQuantity}</strong>
                     </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4 py-4">
                     <div className="space-y-2">
-                        <Label htmlFor="action-amount">Quantidade</Label>
+                        <Label htmlFor="action-amount">QUANTIDADE</Label>
                         <Input
                             id="action-amount"
                             type="number"
@@ -111,13 +111,13 @@ export function ConsignmentActions({
                 </div>
                 <DialogFooter>
                     <Button variant="outline" onClick={() => setOpen(false)}>
-                        Cancelar
+                        CANCELAR
                     </Button>
                     <Button
                         onClick={handleAction}
-                        className={mode === 'SALE' ? 'bg-green-600 hover:bg-green-700' : ''}
+                        className={mode === 'SALE' ? 'bg-green-600 hover:bg-green-700 uppercase' : 'uppercase'}
                     >
-                        {mode === 'RETURN' ? 'Confirmar Retorno' : 'Confirmar Venda'}
+                        {mode === 'RETURN' ? 'CONFIRMAR RETORNO' : 'CONFIRMAR VENDA'}
                     </Button>
                 </DialogFooter>
             </DialogContent>

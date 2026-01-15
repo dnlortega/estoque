@@ -26,17 +26,21 @@ export default async function ProductsPage() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Nome</TableHead>
-                                <TableHead>Preço de Venda</TableHead>
-                                <TableHead>Estoque Central</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead className="text-right">Ações</TableHead>
+                                <TableHead>NOME</TableHead>
+                                <TableHead>TAMANHO</TableHead>
+                                <TableHead>PREÇO DE VENDA</TableHead>
+                                <TableHead>ESTOQUE CENTRAL</TableHead>
+                                <TableHead>STATUS</TableHead>
+                                <TableHead className="text-right">AÇÕES</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {products.map((product: Product) => (
                                 <TableRow key={product.id}>
                                     <TableCell className="font-medium">{product.name}</TableCell>
+                                    <TableCell>
+                                        <Badge variant="outline">{product.size || '-'}</Badge>
+                                    </TableCell>
                                     <TableCell>{formatCurrency(product.price)}</TableCell>
                                     <TableCell>
                                         <span className={product.quantity < 5 ? "text-red-500 font-bold" : ""}>

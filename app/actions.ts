@@ -9,9 +9,13 @@ export async function getProducts() {
     });
 }
 
-export async function createProduct(data: { name: string; price: number; quantity: number }) {
+export async function createProduct(data: { name: string; price: number; quantity: number; size?: string }) {
     const product = await prisma.product.create({
-        data,
+        data: {
+            ...data,
+            name: data.name.toUpperCase(),
+            size: data.size?.toUpperCase(),
+        },
     });
 
     await prisma.movementLog.create({
@@ -86,10 +90,39 @@ export async function getSellers() {
 
 export async function createSeller(data: { name: string; cpf: string; address: string; phone: string }) {
     const seller = await prisma.seller.create({
-        data,
+        data: {
+            ...data,
+            name: data.name.toUpperCase(),
+            address: data.address.toUpperCase(),
+        },
     });
     revalidatePath('/vendedores');
     return seller;
+}
+
+export async function updateSeller(id: string, data: { name: string; cpf: string; address: string; phone: string }) {
+    const seller = await prisma.seller.update({
+        where: { id },
+        data: {
+            ...data,
+            name: data.name.toUpperCase(),
+            address: data.address.toUpperCase(),
+        },
+    });
+    revalidatePath('/vendedores');
+    revalidatePath('/consignacao');
+    return seller;
+}
+
+export async function deleteSeller(id: string) {
+    // Cascading deletion of logs and consignments for this seller
+    await prisma.movementLog.deleteMany({ where: { sellerId: id } });
+    await prisma.consignment.deleteMany({ where: { sellerId: id } });
+    await prisma.seller.delete({ where: { id } });
+
+    revalidatePath('/vendedores');
+    revalidatePath('/consignacao');
+    revalidatePath('/historico');
 }
 
 export async function transferToSeller(productId: string, sellerId: string, quantity: number) {

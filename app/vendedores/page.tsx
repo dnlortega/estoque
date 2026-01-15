@@ -3,7 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { CreateSellerDialog } from '@/components/create-seller-dialog';
 import { Users, MapPin, Phone, CreditCard } from 'lucide-react';
+import { formatCurrency } from '@/lib/utils';
 import { Seller } from '@/types';
+import { SellerActions } from '@/components/seller-actions';
 
 export default async function SellersPage() {
     const sellers: Seller[] = await getSellers() as any;
@@ -28,6 +30,7 @@ export default async function SellersPage() {
                                 <TableHead>Telefone</TableHead>
                                 <TableHead>Endereço</TableHead>
                                 <TableHead>Consignações</TableHead>
+                                <TableHead className="text-right">AÇÕES</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -55,11 +58,14 @@ export default async function SellersPage() {
                                     <TableCell>
                                         {seller.consignments.length} produto(s)
                                     </TableCell>
+                                    <TableCell className="text-right">
+                                        <SellerActions seller={seller} />
+                                    </TableCell>
                                 </TableRow>
                             ))}
                             {sellers.length === 0 && (
                                 <TableRow>
-                                    <TableCell colSpan={5} className="h-24 text-center">
+                                    <TableCell colSpan={6} className="h-24 text-center">
                                         Nenhum vendedor cadastrado.
                                     </TableCell>
                                 </TableRow>

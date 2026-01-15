@@ -44,23 +44,23 @@ export function TransferDialog({ products, sellers }: TransferDialogProps) {
     async function handleTransfer() {
         const qty = parseInt(amount);
         if (!selectedProduct || !selectedSeller || isNaN(qty) || qty <= 0) {
-            toast.error('Preencha todos os campos corretamente.');
+            toast.error('PREENCHA TODOS OS CAMPOS CORRETAMENTE.');
             return;
         }
 
         if (product && qty > product.quantity) {
-            toast.error(`Estoque insuficiente. Disponível: ${product.quantity}`);
+            toast.error(`ESTOQUE INSUFICIENTE. DISPONÍVEL: ${product.quantity}`);
             return;
         }
 
         try {
             await transferToSeller(selectedProduct, selectedSeller, qty);
-            toast.success('Transferência realizada com sucesso!');
+            toast.success('TRANSFERÊNCIA REALIZADA COM SUCESSO!');
             setOpen(false);
             reset();
             router.refresh();
         } catch (error) {
-            toast.error('Erro ao realizar transferência.');
+            toast.error('ERRO AO REALIZAR TRANSFERÊNCIA.');
         }
     }
 
@@ -73,43 +73,43 @@ export function TransferDialog({ products, sellers }: TransferDialogProps) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button className="gap-2">
+                <Button className="gap-2 uppercase font-bold">
                     <MoveRight className="h-4 w-4" />
-                    Transferir para Vendedor
+                    TRANSFERIR PARA VENDEDOR
                 </Button>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Transferir Produto</DialogTitle>
+                    <DialogTitle>TRANSFERIR PRODUTO</DialogTitle>
                     <DialogDescription>
-                        Retira itens do estoque central e atribui a um vendedor.
+                        RETIRA ITENS DO ESTOQUE CENTRAL E ATRIBUI A UM VENDEDOR.
                     </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4 py-4">
                     <div className="space-y-2">
-                        <Label>Produto</Label>
+                        <Label>PRODUTO</Label>
                         <Select value={selectedProduct} onValueChange={setSelectedProduct}>
                             <SelectTrigger>
-                                <SelectValue placeholder="Selecione o produto" />
+                                <SelectValue placeholder="SELECIONE O PRODUTO" />
                             </SelectTrigger>
                             <SelectContent>
                                 {products.map((p) => (
-                                    <SelectItem key={p.id} value={p.id}>
-                                        {p.name} ({p.quantity} disponíveis)
+                                    <SelectItem key={p.id} value={p.id} className="uppercase">
+                                        {p.name} {p.size ? `(${p.size})` : ''} - {p.quantity} DISP.
                                     </SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
                     </div>
                     <div className="space-y-2">
-                        <Label>Vendedor</Label>
+                        <Label>VENDEDOR</Label>
                         <Select value={selectedSeller} onValueChange={setSelectedSeller}>
                             <SelectTrigger>
-                                <SelectValue placeholder="Selecione o vendedor" />
+                                <SelectValue placeholder="SELECIONE O VENDEDOR" />
                             </SelectTrigger>
                             <SelectContent>
                                 {sellers.map((s) => (
-                                    <SelectItem key={s.id} value={s.id}>
+                                    <SelectItem key={s.id} value={s.id} className="uppercase">
                                         {s.name}
                                     </SelectItem>
                                 ))}
@@ -117,7 +117,7 @@ export function TransferDialog({ products, sellers }: TransferDialogProps) {
                         </Select>
                     </div>
                     <div className="space-y-2">
-                        <Label htmlFor="transfer-amount">Quantidade</Label>
+                        <Label htmlFor="transfer-amount">QUANTIDADE</Label>
                         <Input
                             id="transfer-amount"
                             type="number"
@@ -129,9 +129,9 @@ export function TransferDialog({ products, sellers }: TransferDialogProps) {
                 </div>
                 <DialogFooter>
                     <Button variant="outline" onClick={() => setOpen(false)}>
-                        Cancelar
+                        CANCELAR
                     </Button>
-                    <Button onClick={handleTransfer}>Confirmar Transferência</Button>
+                    <Button onClick={handleTransfer}>CONFIRMAR TRANSFERÊNCIA</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
