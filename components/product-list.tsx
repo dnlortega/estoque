@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/utils';
 import { Product } from '@/types';
 import { Input } from '@/components/ui/input';
-import { Search, PackageX } from 'lucide-react';
+import { Search, PackageX, Package, Palette, Ruler } from 'lucide-react';
 
 interface ProductListProps {
     initialProducts: Product[];
@@ -27,63 +27,93 @@ export function ProductList({ initialProducts }: ProductListProps) {
 
     return (
         <div className="space-y-6 uppercase">
-            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            {/* SEARCH AND ADD - MOBILE OPTIMIZED */}
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between sticky top-16 z-20 bg-background/80 backdrop-blur-md py-2 -mx-4 px-4 md:mx-0 md:px-0">
                 <div className="relative w-full md:w-96">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
-                        placeholder="BUSCAR NOME, COR OU TAMANHO..."
-                        className="pl-10 font-bold h-11 bg-card/50"
+                        placeholder="BUSCAR PRODUTO, COR..."
+                        className="pl-10 font-bold h-12 md:h-11 bg-card/50 shadow-sm border-primary/10"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                     />
                 </div>
-                <CreateProductDialog />
+                <div className="flex justify-end">
+                    <CreateProductDialog />
+                </div>
             </div>
 
-            <Card className="border-none shadow-2xl bg-card/50 backdrop-blur-sm overflow-hidden">
+            {/* PRODUCT CARDS - MOBILE ONLY */}
+            <div className="grid grid-cols-1 gap-4 md:hidden pb-10">
+                {filteredProducts.map((product) => (
+                    <Card key={product.id} className="border-none shadow-lg bg-card/50 backdrop-blur-sm overflow-hidden">
+                        <CardContent className="p-4 space-y-3">
+                            <div className="flex justify-between items-start">
+                                <h3 className="font-black text-sm tracking-tight leading-tight max-w-[70%]">{product.name}</h3>
+                                <div className="flex gap-2">
+                                    <StockAdjustmentDialog product={product} />
+                                    <DeleteProductDialog productId={product.id} productName={product.name} />
+                                </div>
+                            </div>
+
+                            <div className="flex flex-wrap gap-2 text-[10px] font-bold">
+                                <Badge variant="outline" className="gap-1 px-1.5 h-6">
+                                    <Ruler className="h-3 w-3 opacity-50" /> {product.size || '-'}
+                                </Badge>
+                                <Badge variant="secondary" className="gap-1 px-1.5 h-6 bg-primary/10 text-primary border-none">
+                                    <Palette className="h-3 w-3 opacity-50" /> {product.color || '-'}
+                                </Badge>
+                                <Badge variant={product.quantity < 5 ? "destructive" : "secondary"} className="h-6 gap-1 border-none">
+                                    <Package className="h-3 w-3 opacity-50" /> {product.quantity} QTD
+                                </Badge>
+                            </div>
+
+                            <div className="flex justify-between items-center pt-2 border-t border-primary/5">
+                                <span className="text-[10px] opacity-50 font-black">PREÇO DE VENDA</span>
+                                <span className="text-sm font-black text-primary">{formatCurrency(product.price)}</span>
+                            </div>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+
+            {/* TABLE - DESKTOP ONLY */}
+            <Card className="hidden md:block border-none shadow-2xl bg-card/50 backdrop-blur-sm overflow-hidden mb-10">
                 <CardHeader className="bg-primary/5 pb-4 border-b border-primary/10">
                     <div className="flex items-center justify-between">
-                        <CardTitle className="text-xs font-black tracking-widest">TODOS OS PRODUTOS</CardTitle>
-                        <Badge variant="outline" className="text-[10px] opacity-50">{filteredProducts.length} ITENS ENCONTRADOS</Badge>
+                        <CardTitle className="text-xs font-black tracking-widest">CATÁLOGO COMPLETO</CardTitle>
+                        <Badge variant="outline" className="text-[10px] opacity-50 font-bold">{filteredProducts.length} ITENS</Badge>
                     </div>
                 </CardHeader>
-                <CardContent className="p-0 overflow-x-auto">
+                <CardContent className="p-0">
                     <Table>
                         <TableHeader className="bg-muted/40">
                             <TableRow className="border-none">
-                                <TableHead className="text-[10px] font-black h-12 px-6">NOME</TableHead>
-                                <TableHead className="text-[10px] font-black h-12 text-center w-[80px]">TAM.</TableHead>
-                                <TableHead className="text-[10px] font-black h-12 text-center w-[80px]">COR</TableHead>
+                                <TableHead className="text-[10px] font-black h-12 px-6">PRODUTO</TableHead>
+                                <TableHead className="text-[10px] font-black h-12 text-center w-[100px]">TAM.</TableHead>
+                                <TableHead className="text-[10px] font-black h-12 text-center w-[120px]">COR</TableHead>
                                 <TableHead className="text-[10px] font-black h-12 text-center w-[120px]">PREÇO</TableHead>
-                                <TableHead className="text-[10px] font-black h-12 text-center w-[100px]">ESTOQUE</TableHead>
-                                <TableHead className="text-[10px] font-black h-12 text-center w-[120px]">STATUS</TableHead>
+                                <TableHead className="text-[10px] font-black h-12 text-center w-[100px]">QTD</TableHead>
                                 <TableHead className="text-[10px] font-black h-12 text-right pr-6 w-[120px]">AÇÕES</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {filteredProducts.map((product: Product) => (
-                                <TableRow key={product.id} className="hover:bg-primary/[0.02] transition-colors border-b border-primary/5 last:border-0">
-                                    <TableCell className="font-black text-xs px-6 py-4">{product.name}</TableCell>
-                                    <TableCell className="text-center">
-                                        <Badge variant="outline" className="text-[10px] font-bold">{product.size || '-'}</Badge>
+                                <TableRow key={product.id} className="hover:bg-primary/[0.02] transition-colors border-b border-primary/5 last:border-0 group">
+                                    <TableCell className="font-black text-xs px-6 py-5 group-hover:text-primary transition-colors">{product.name}</TableCell>
+                                    <TableCell className="text-center py-5">
+                                        <Badge variant="outline" className="text-[10px] font-bold h-6">{product.size || '-'}</Badge>
                                     </TableCell>
-                                    <TableCell className="text-center">
-                                        <Badge variant="secondary" className="text-[10px] font-black bg-muted/50">{product.color || '-'}</Badge>
+                                    <TableCell className="text-center py-5">
+                                        <Badge variant="secondary" className="text-[10px] font-black h-6 px-3 bg-primary/10 text-primary border-none">
+                                            {product.color || '-'}
+                                        </Badge>
                                     </TableCell>
-                                    <TableCell className="text-center text-xs font-bold">{formatCurrency(product.price)}</TableCell>
-                                    <TableCell className="text-center">
-                                        <span className={`text-xs font-black ${product.quantity < 5 ? "text-red-500" : ""}`}>
-                                            {product.quantity}
-                                        </span>
+                                    <TableCell className="text-center py-5 text-xs font-black">{formatCurrency(product.price)}</TableCell>
+                                    <TableCell className="text-center py-5 font-black text-sm">
+                                        <span className={product.quantity < 5 ? "text-red-500" : ""}>{product.quantity}</span>
                                     </TableCell>
-                                    <TableCell className="text-center">
-                                        {product.quantity < 5 ? (
-                                            <Badge variant="destructive" className="text-[8px] font-black">BAIXO</Badge>
-                                        ) : (
-                                            <Badge variant="secondary" className="bg-green-100 text-green-700 dark:bg-green-950/40 dark:text-green-400 text-[8px] font-black">EM DIA</Badge>
-                                        )}
-                                    </TableCell>
-                                    <TableCell className="text-right pr-6">
+                                    <TableCell className="text-right pr-6 py-5">
                                         <div className="flex justify-end gap-2">
                                             <StockAdjustmentDialog product={product} />
                                             <DeleteProductDialog productId={product.id} productName={product.name} />
@@ -91,20 +121,17 @@ export function ProductList({ initialProducts }: ProductListProps) {
                                     </TableCell>
                                 </TableRow>
                             ))}
-                            {filteredProducts.length === 0 && (
-                                <TableRow>
-                                    <TableCell colSpan={7} className="h-64 text-center">
-                                        <div className="flex flex-col items-center justify-center gap-3 opacity-20">
-                                            <PackageX className="h-12 w-12" />
-                                            <p className="text-xs font-black tracking-widest italic">NENHUM PRODUTO ENCONTRADO</p>
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            )}
                         </TableBody>
                     </Table>
                 </CardContent>
             </Card>
+
+            {filteredProducts.length === 0 && (
+                <div className="flex flex-col items-center justify-center h-64 opacity-20 py-10">
+                    <PackageX className="h-16 w-16 mb-4" />
+                    <p className="text-xs font-black tracking-widest italic">NENHUM PRODUTO ENCONTRADO</p>
+                </div>
+            )}
         </div>
     );
 }

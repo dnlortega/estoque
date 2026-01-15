@@ -2,48 +2,55 @@
 import { prisma } from './lib/prisma';
 
 async function main() {
-    console.log('🗑️ Apagando todos os dados...');
+    console.log('🗑️ LIMPANDO PRODUTOS E MOVIMENTAÇÕES...');
 
-    // A ordem é importante devido às chaves estrangeiras
     await prisma.movementLog.deleteMany();
     await prisma.consignment.deleteMany();
     await prisma.product.deleteMany();
-    // Não apago os vendedores, apenas os produtos conforme solicitado
 
-    console.log('✅ Todos os produtos e movimentações foram removidos.');
+    console.log('📦 CADASTRANDO 30 NOVOS PRODUTOS...');
 
-    console.log('📦 Cadastrando novos produtos...');
-
-    const products = [
-        { name: 'CAMISOLA SEDA PREMIUM', price: 89.90, quantity: 20, size: 'M', color: 'PRETO' },
-        { name: 'CONJUNTO RENDA LUXO', price: 120.00, quantity: 15, size: 'G', color: 'VERMELHO' },
-        { name: 'BABYDOLL CETIM', price: 65.00, quantity: 30, size: 'P', color: 'AZUL' },
-        { name: 'TOP ESPORTIVO DRYFIT', price: 45.00, quantity: 50, size: 'GG', color: 'CINZA' },
-        { name: 'CALCINHA SEM COSTURA', price: 15.00, quantity: 100, size: 'ÚNICO', color: 'BEGE' },
-        { name: 'ROBE LONGO FLORAL', price: 150.00, quantity: 10, size: 'P', color: 'BRANCO' },
+    const categories = [
+        { name: 'CONJUNTO RENDA', colors: ['PRETO', 'VERMELHO', 'BRANCO', 'AZUL MARINHO', 'VINHO'], price: 98.00 },
+        { name: 'BABYDOLL CETIM', colors: ['ROSA CHÁ', 'PRETO', 'DOURADO', 'PRATA'], price: 75.00 },
+        { name: 'CAMISOLA SEDA', colors: ['ESMERALDA', 'RUBI', 'PÉROLA'], price: 110.00 },
+        { name: 'CALCINHA ALGODÃO', colors: ['NUDE', 'BEGE', 'PRETO', 'CINZA'], price: 19.90 },
+        { name: 'TOP FITNESS DRY', colors: ['NEON', 'GRAFITE', 'AZUL'], price: 42.00 },
+        { name: 'ROBE LUXO', colors: ['CHAMPAGNE', 'BORDÔ'], price: 145.00 },
+        { name: 'BODY RENDA', colors: ['PRETO', 'VERMELHO'], price: 125.00 },
+        { name: 'SHORT DOLL', colors: ['ESTAMPADO', 'LILÁS'], price: 58.00 },
     ];
 
-    for (const p of products) {
-        const product = await prisma.product.create({
-            data: {
-                name: p.name.toUpperCase(),
-                price: p.price,
-                quantity: p.quantity,
-                size: p.size.toUpperCase(),
-                color: p.color.toUpperCase(),
-            }
-        });
+    const sizes = ['P', 'M', 'G', 'GG'];
+    let count = 0;
 
-        await prisma.movementLog.create({
-            data: {
-                type: 'ENTRY',
-                quantity: p.quantity,
-                productId: product.id,
-            }
-        });
+    for (const cat of categories) {
+        for (const color of cat.colors) {
+            const size = sizes[Math.floor(Math.random() * sizes.length)];
+            const qty = Math.floor(Math.random() * 50) + 10;
+
+            const product = await prisma.product.create({
+                data: {
+                    name: cat.name.toUpperCase(),
+                    price: cat.price,
+                    quantity: qty,
+                    size: size,
+                    color: color.toUpperCase(),
+                }
+            });
+
+            await prisma.movementLog.create({
+                data: {
+                    type: 'ENTRY',
+                    quantity: qty,
+                    productId: product.id,
+                }
+            });
+            count++;
+        }
     }
 
-    console.log('✨ Novos produtos cadastrados com sucesso!');
+    console.log(`✨ ${count} PRODUTOS CADASTRADOS COM SUCESSO!`);
 }
 
 main()
