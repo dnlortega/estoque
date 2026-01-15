@@ -8,12 +8,13 @@ import { SellerActions } from '@/components/seller-actions';
 import { WhatsAppShare } from '@/components/whatsapp-share';
 import { formatCurrency } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
+import { FadeIn, StaggerContainer, StaggerItem } from '@/components/animations';
 
 export default async function SellersPage() {
     const sellers: Seller[] = await getSellers() as any;
 
     return (
-        <div className="space-y-6 uppercase">
+        <FadeIn className="space-y-6 uppercase">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">GESTÃO DE VENDEDORES</h1>
@@ -36,61 +37,65 @@ export default async function SellersPage() {
                 </CardHeader>
                 <CardContent className="p-0">
                     {/* MOBILE VIEW (CARDS) */}
-                    <div className="grid grid-cols-1 gap-4 md:hidden p-4">
+                    <StaggerContainer className="grid grid-cols-1 gap-4 md:hidden p-4">
                         {sellers.map((seller: Seller) => {
                             const totalQty = seller.consignments.reduce((acc, c) => acc + c.quantity, 0);
                             const totalValue = seller.consignments.reduce((acc, c) => acc + (c.quantity * c.product.price), 0);
 
                             return (
-                                <div key={seller.id} className="bg-muted/40 rounded-lg p-4 space-y-4 border border-border/50">
-                                    <div className="flex items-start justify-between">
-                                        <div className="space-y-1">
-                                            <span className="font-black text-sm tracking-tight">{seller.name}</span>
-                                            <div className="flex items-center gap-1.5 text-[10px] font-mono opacity-50">
-                                                <CreditCard className="h-3 w-3" />
-                                                {seller.cpf}
+                                <StaggerItem key={seller.id}>
+                                    <div className="bg-muted/40 rounded-lg p-4 space-y-4 border border-border/50">
+                                        <div className="flex items-start justify-between">
+                                            <div className="space-y-1">
+                                                <span className="font-black text-sm tracking-tight">{seller.name}</span>
+                                                <div className="flex items-center gap-1.5 text-[10px] font-mono opacity-50">
+                                                    <CreditCard className="h-3 w-3" />
+                                                    {seller.cpf}
+                                                </div>
+                                            </div>
+                                            <SellerActions seller={seller} />
+                                        </div>
+
+                                        <div className="space-y-2 text-[11px]">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-1.5 font-bold">
+                                                    <Phone className="h-3.5 w-3.5 opacity-40 text-primary" />
+                                                    {seller.phone}
+                                                </div>
+                                                <WhatsAppShare seller={seller} />
+                                            </div>
+                                            <div className="flex items-center gap-1.5 opacity-60 italic">
+                                                <MapPin className="h-3 w-3 shrink-0" />
+                                                <span className="truncate">{seller.address}</span>
                                             </div>
                                         </div>
-                                        <SellerActions seller={seller} />
-                                    </div>
 
-                                    <div className="space-y-2 text-[11px]">
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-1.5 font-bold">
-                                                <Phone className="h-3.5 w-3.5 opacity-40 text-primary" />
-                                                {seller.phone}
+                                        <div className="grid grid-cols-2 gap-2 pt-3 border-t border-border/50">
+                                            <div className="flex flex-col items-center p-2 bg-background/50 rounded">
+                                                <span className="text-[9px] font-black opacity-40 mb-1">ITENS EM POSSE</span>
+                                                <span className="text-sm font-black flex items-center gap-1">
+                                                    <Package className="h-3 w-3" /> {totalQty}
+                                                </span>
                                             </div>
-                                            <WhatsAppShare seller={seller} />
-                                        </div>
-                                        <div className="flex items-center gap-1.5 opacity-60 italic">
-                                            <MapPin className="h-3 w-3 shrink-0" />
-                                            <span className="truncate">{seller.address}</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-2 pt-3 border-t border-border/50">
-                                        <div className="flex flex-col items-center p-2 bg-background/50 rounded">
-                                            <span className="text-[9px] font-black opacity-40 mb-1">ITENS EM POSSE</span>
-                                            <span className="text-sm font-black flex items-center gap-1">
-                                                <Package className="h-3 w-3" /> {totalQty}
-                                            </span>
-                                        </div>
-                                        <div className="flex flex-col items-center p-2 bg-background/50 rounded">
-                                            <span className="text-[9px] font-black opacity-40 mb-1">VALOR TOTAL</span>
-                                            <span className="text-sm font-black text-green-600 dark:text-green-400">
-                                                {formatCurrency(totalValue)}
-                                            </span>
+                                            <div className="flex flex-col items-center p-2 bg-background/50 rounded">
+                                                <span className="text-[9px] font-black opacity-40 mb-1">VALOR TOTAL</span>
+                                                <span className="text-sm font-black text-green-600 dark:text-green-400">
+                                                    {formatCurrency(totalValue)}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                </StaggerItem>
                             );
                         })}
                         {sellers.length === 0 && (
-                            <div className="text-center py-8 text-muted-foreground text-xs uppercase opacity-50">
-                                Nenhum vendedor cadastrado
-                            </div>
+                            <StaggerItem>
+                                <div className="text-center py-8 text-muted-foreground text-xs uppercase opacity-50">
+                                    Nenhum vendedor cadastrado
+                                </div>
+                            </StaggerItem>
                         )}
-                    </div>
+                    </StaggerContainer>
 
                     {/* DESKTOP VIEW (TABLE) */}
                     <div className="hidden md:block overflow-x-auto">
@@ -182,6 +187,6 @@ export default async function SellersPage() {
                     </div>
                 </CardContent>
             </Card>
-        </div>
+        </FadeIn>
     );
 }
