@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { MoveRight } from 'lucide-react';
+import { MoveRight, Check, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -73,9 +73,8 @@ export function TransferDialog({ products, sellers }: TransferDialogProps) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button className="gap-2 uppercase font-bold">
-                    <MoveRight className="h-4 w-4" />
-                    TRANSFERIR PARA VENDEDOR
+                <Button size="icon" title="TRANSFERIR PARA VENDEDOR">
+                    <MoveRight className="h-5 w-5" />
                 </Button>
             </DialogTrigger>
             <DialogContent>
@@ -127,11 +126,13 @@ export function TransferDialog({ products, sellers }: TransferDialogProps) {
                         />
                     </div>
                 </div>
-                <DialogFooter>
-                    <Button variant="outline" onClick={() => setOpen(false)}>
-                        CANCELAR
+                <DialogFooter className="flex justify-end gap-2">
+                    <Button variant="outline" size="icon" onClick={() => setOpen(false)} title="CANCELAR">
+                        <X className="h-5 w-5" />
                     </Button>
-                    <Button onClick={handleTransfer}>CONFIRMAR TRANSFERÊNCIA</Button>
+                    <Button size="icon" onClick={handleTransfer} title="CONFIRMAR TRANSFERÊNCIA">
+                        <Check className="h-5 w-5" />
+                    </Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>

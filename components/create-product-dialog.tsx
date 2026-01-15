@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { toast } from 'sonner';
-import { Plus } from 'lucide-react';
+import { Plus, Check, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -76,9 +76,8 @@ export function CreateProductDialog() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button className="gap-2">
-                    <Plus className="h-4 w-4" />
-                    NOVO PRODUTO
+                <Button size="icon" title="NOVO PRODUTO">
+                    <Plus className="h-5 w-5" />
                 </Button>
             </DialogTrigger>
             <DialogContent>
@@ -133,11 +132,13 @@ export function CreateProductDialog() {
                         </div>
                     </div>
 
-                    <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-                            CANCELAR
+                    <DialogFooter className="flex justify-end gap-2">
+                        <Button type="button" variant="outline" size="icon" onClick={() => setOpen(false)} title="CANCELAR">
+                            <X className="h-5 w-5" />
                         </Button>
-                        <Button type="submit">SALVAR PRODUTO</Button>
+                        <Button type="submit" size="icon" title="SALVAR PRODUTO">
+                            <Check className="h-5 w-5" />
+                        </Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

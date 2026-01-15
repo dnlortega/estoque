@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { toast } from 'sonner';
-import { Pencil, Trash2, MoreHorizontal, AlertTriangle } from 'lucide-react';
+import { Pencil, Trash2, MoreHorizontal, AlertTriangle, Check, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -167,12 +167,12 @@ export function SellerActions({ seller }: SellerActionsProps) {
                             <Label htmlFor="edit-address">ENDEREÇO</Label>
                             <Input id="edit-address" {...form.register('address')} />
                         </div>
-                        <DialogFooter>
-                            <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)}>
-                                CANCELAR
+                        <DialogFooter className="flex justify-end gap-2">
+                            <Button type="button" variant="outline" size="icon" onClick={() => setIsEditDialogOpen(false)} title="CANCELAR">
+                                <X className="h-5 w-5" />
                             </Button>
-                            <Button type="submit" disabled={isSubmitting}>
-                                {isSubmitting ? 'SALVANDO...' : 'SALVAR ALTERAÇÕES'}
+                            <Button type="submit" size="icon" disabled={isSubmitting} title="SALVAR ALTERAÇÕES">
+                                <Check className="h-5 w-5" />
                             </Button>
                         </DialogFooter>
                     </form>
@@ -191,14 +191,22 @@ export function SellerActions({ seller }: SellerActionsProps) {
                             ESTA AÇÃO IRÁ EXCLUIR O VENDEDOR <strong>{seller.name}</strong> E TODO O SEU HISTÓRICO DE CONSIGNAÇÃO E MOVIMENTAÇÕES. ESTA AÇÃO NÃO PODE SER DESFEITA.
                         </AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel disabled={isSubmitting}>CANCELAR</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={onDeleteConfirm}
-                            className="bg-red-600 hover:bg-red-700 text-white"
-                            disabled={isSubmitting}
-                        >
-                            {isSubmitting ? 'EXCLUINDO...' : 'SIM, EXCLUIR VENDEDOR'}
+                    <AlertDialogFooter className="flex justify-end gap-2">
+                        <AlertDialogCancel asChild>
+                            <Button variant="outline" size="icon" disabled={isSubmitting} title="CANCELAR">
+                                <X className="h-5 w-5" />
+                            </Button>
+                        </AlertDialogCancel>
+                        <AlertDialogAction asChild>
+                            <Button
+                                variant="destructive"
+                                size="icon"
+                                onClick={onDeleteConfirm}
+                                disabled={isSubmitting}
+                                title="SIM, EXCLUIR VENDEDOR"
+                            >
+                                <Trash2 className="h-5 w-5" />
+                            </Button>
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

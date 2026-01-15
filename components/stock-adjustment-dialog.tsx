@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { PlusCircle, MinusCircle } from 'lucide-react';
+import { PlusCircle, MinusCircle, Settings2, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -48,7 +48,9 @@ export function StockAdjustmentDialog({ product }: { product: Product }) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="outline" size="sm">Ajustar Saldo</Button>
+                <Button variant="outline" size="icon" title="AJUSTAR SALDO">
+                    <Settings2 className="h-5 w-5" />
+                </Button>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
@@ -69,25 +71,27 @@ export function StockAdjustmentDialog({ product }: { product: Product }) {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <Button
-                            className="gap-2 bg-green-600 hover:bg-green-700"
+                            size="icon"
+                            className="w-full bg-green-600 hover:bg-green-700"
                             onClick={() => handleAdjust('ADD')}
+                            title="ENTRADA"
                         >
-                            <PlusCircle className="h-4 w-4" />
-                            Entrada
+                            <PlusCircle className="h-6 w-6" />
                         </Button>
                         <Button
                             variant="destructive"
-                            className="gap-2"
+                            size="icon"
+                            className="w-full"
                             onClick={() => handleAdjust('REMOVE')}
+                            title="SAÍDA"
                         >
-                            <MinusCircle className="h-4 w-4" />
-                            Saída
+                            <MinusCircle className="h-6 w-6" />
                         </Button>
                     </div>
                 </div>
                 <DialogFooter>
-                    <Button variant="ghost" onClick={() => setOpen(false)}>
-                        Fechar
+                    <Button variant="ghost" size="icon" onClick={() => setOpen(false)} title="FECHAR">
+                        <X className="h-5 w-5" />
                     </Button>
                 </DialogFooter>
             </DialogContent>

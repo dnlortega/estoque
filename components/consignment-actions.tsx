@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { Undo2, Banknote } from 'lucide-react';
+import { Undo2, Banknote, Check, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -67,23 +67,23 @@ export function ConsignmentActions({
                 <DialogTrigger asChild>
                     <Button
                         variant="outline"
-                        size="sm"
-                        className="h-8 gap-1 text-[10px] uppercase font-bold"
+                        size="icon"
+                        className="h-8 w-8"
                         onClick={() => setMode('RETURN')}
+                        title="RETORNAR"
                     >
-                        <Undo2 className="h-3 w-3" />
-                        RETORNAR
+                        <Undo2 className="h-4 w-4" />
                     </Button>
                 </DialogTrigger>
                 <DialogTrigger asChild>
                     <Button
                         variant="secondary"
-                        size="sm"
-                        className="h-8 gap-1 text-[10px] uppercase font-bold bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400"
+                        size="icon"
+                        className="h-8 w-8 bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400"
                         onClick={() => setMode('SALE')}
+                        title="VENDA"
                     >
-                        <Banknote className="h-3 w-3" />
-                        VENDA
+                        <Banknote className="h-4 w-4" />
                     </Button>
                 </DialogTrigger>
             </div>
@@ -109,15 +109,17 @@ export function ConsignmentActions({
                         />
                     </div>
                 </div>
-                <DialogFooter>
-                    <Button variant="outline" onClick={() => setOpen(false)}>
-                        CANCELAR
+                <DialogFooter className="flex justify-end gap-2">
+                    <Button variant="outline" size="icon" onClick={() => setOpen(false)} title="CANCELAR">
+                        <X className="h-5 w-5" />
                     </Button>
                     <Button
                         onClick={handleAction}
-                        className={mode === 'SALE' ? 'bg-green-600 hover:bg-green-700 uppercase' : 'uppercase'}
+                        size="icon"
+                        className={mode === 'SALE' ? 'bg-green-600 hover:bg-green-700' : ''}
+                        title="CONFIRMAR"
                     >
-                        {mode === 'RETURN' ? 'CONFIRMAR RETORNO' : 'CONFIRMAR VENDA'}
+                        <Check className="h-5 w-5" />
                     </Button>
                 </DialogFooter>
             </DialogContent>

@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { toast } from 'sonner';
-import { UserPlus } from 'lucide-react';
+import { UserPlus, Check, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -48,21 +48,20 @@ export function CreateSellerDialog() {
     async function onSubmit(data: SellerFormValues) {
         try {
             await createSeller(data);
-            toast.success('Vendedor cadastrado com sucesso!');
+            toast.success('VENDEDOR CADASTRADO COM SUCESSO!');
             setOpen(false);
             form.reset();
             router.refresh();
         } catch (error) {
-            toast.error('Erro ao cadastrar vendedor. Verifique se o CPF já existe.');
+            toast.error('ERRO AO CADASTRAR VENDEDOR. VERIFIQUE SE O CPF JÁ EXISTE.');
         }
     }
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button className="gap-2">
-                    <UserPlus className="h-4 w-4" />
-                    Novo Vendedor
+                <Button size="icon" title="NOVO VENDEDOR">
+                    <UserPlus className="h-5 w-5" />
                 </Button>
             </DialogTrigger>
             <DialogContent>
@@ -107,11 +106,13 @@ export function CreateSellerDialog() {
                         <Label htmlFor="address">ENDEREÇO</Label>
                         <Input id="address" {...form.register('address')} placeholder="RUA, NÚMERO, BAIRRO, CIDADE" />
                     </div>
-                    <DialogFooter>
-                        <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-                            CANCELAR
+                    <DialogFooter className="flex justify-end gap-2">
+                        <Button type="button" variant="outline" size="icon" onClick={() => setOpen(false)} title="CANCELAR">
+                            <X className="h-5 w-5" />
                         </Button>
-                        <Button type="submit">CADASTRAR</Button>
+                        <Button type="submit" size="icon" title="CADASTRAR">
+                            <Check className="h-5 w-5" />
+                        </Button>
                     </DialogFooter>
                 </form>
             </DialogContent>
