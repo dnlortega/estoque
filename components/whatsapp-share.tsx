@@ -50,13 +50,12 @@ export function WhatsAppShare({ seller }: WhatsAppShareProps) {
     return (
         <Button
             variant="ghost"
-            size="sm"
+            size="icon"
             onClick={handleShare}
-            className="flex items-center gap-2 text-green-600 hover:text-green-700 hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-950/30 font-bold uppercase text-[10px] transition-all"
+            className="h-8 w-8 text-green-500 hover:text-green-600 hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-950/30 transition-all"
             title="ENVIAR ESTOQUE VIA WHATSAPP"
         >
-            <MessageSquareShare className="h-3.5 w-3.5" />
-            WHATSAPP
+            <MessageSquareShare className="h-5 w-5" />
         </Button>
     );
 }
