@@ -34,6 +34,7 @@ const productSchema = z.object({
     price: z.string().refine((v) => !isNaN(parseFloat(v)) && parseFloat(v) > 0, 'PREÇO DEVE SER MAIOR QUE ZERO'),
     quantity: z.string().refine((v) => !isNaN(parseInt(v)) && parseInt(v) >= 0, 'QUANTIDADE NÃO PODE SER NEGATIVA'),
     size: z.string().min(1, 'TAMANHO É OBRIGATÓRIO'),
+    color: z.string().min(1, 'COR É OBRIGATÓRIA'),
 });
 
 type ProductFormValues = {
@@ -41,6 +42,7 @@ type ProductFormValues = {
     price: string;
     quantity: string;
     size: string;
+    color: string;
 };
 
 export function CreateProductDialog() {
@@ -53,6 +55,7 @@ export function CreateProductDialog() {
             price: '0',
             quantity: '0',
             size: '',
+            color: '',
         },
     });
 
@@ -63,6 +66,7 @@ export function CreateProductDialog() {
                 price: parseFloat(data.price),
                 quantity: parseInt(data.quantity),
                 size: data.size,
+                color: data.color,
             });
             toast.success('PRODUTO CRIADO COM SUCESSO!');
             setOpen(false);
@@ -80,7 +84,7 @@ export function CreateProductDialog() {
                     <Plus className="h-5 w-5" />
                 </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="uppercase font-bold">
                 <DialogHeader>
                     <DialogTitle>CADASTRAR NOVO PRODUTO</DialogTitle>
                     <DialogDescription>
@@ -92,11 +96,11 @@ export function CreateProductDialog() {
                         <Label htmlFor="name">NOME DO PRODUTO</Label>
                         <Input id="name" {...form.register('name')} placeholder="EX: CONJUNTO RENDA PRETO" />
                         {form.formState.errors.name && (
-                            <p className="text-sm text-red-500">{form.formState.errors.name.message}</p>
+                            <p className="text-[10px] text-red-500">{form.formState.errors.name.message}</p>
                         )}
                     </div>
 
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="size">TAMANHO</Label>
                             <Select
@@ -119,20 +123,36 @@ export function CreateProductDialog() {
                                 </SelectContent>
                             </Select>
                             {form.formState.errors.size && (
-                                <p className="text-xs text-red-500">{form.formState.errors.size.message}</p>
+                                <p className="text-[10px] text-red-500">{form.formState.errors.size.message}</p>
                             )}
                         </div>
                         <div className="space-y-2">
+                            <Label htmlFor="color">COR</Label>
+                            <Input id="color" {...form.register('color')} placeholder="EX: PRETO" />
+                            {form.formState.errors.color && (
+                                <p className="text-[10px] text-red-500">{form.formState.errors.color.message}</p>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
                             <Label htmlFor="price">PREÇO (R$)</Label>
                             <Input id="price" type="number" step="0.01" {...form.register('price')} />
+                            {form.formState.errors.price && (
+                                <p className="text-[10px] text-red-500">{form.formState.errors.price.message}</p>
+                            )}
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="quantity">QNTD.</Label>
                             <Input id="quantity" type="number" {...form.register('quantity')} />
+                            {form.formState.errors.quantity && (
+                                <p className="text-[10px] text-red-500">{form.formState.errors.quantity.message}</p>
+                            )}
                         </div>
                     </div>
 
-                    <DialogFooter className="flex justify-end gap-2">
+                    <DialogFooter className="flex justify-end gap-2 pt-4">
                         <Button type="button" variant="outline" size="icon" onClick={() => setOpen(false)} title="CANCELAR">
                             <X className="h-5 w-5" />
                         </Button>

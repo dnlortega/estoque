@@ -6,6 +6,7 @@ export interface Product {
     price: number;
     quantity: number;
     size?: string;
+    color?: string;
     createdAt: Date;
     updatedAt: Date;
     consignments?: Consignment[];

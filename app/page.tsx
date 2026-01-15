@@ -153,6 +153,7 @@ export default async function DashboardPage() {
               <TableRow>
                 <TableHead className="text-[10px] uppercase">PRODUTO</TableHead>
                 <TableHead className="text-[10px] uppercase">TAMANHO</TableHead>
+                <TableHead className="text-[10px] uppercase">COR</TableHead>
                 <TableHead className="text-[10px] uppercase">PREÇO</TableHead>
                 <TableHead className="text-[10px] uppercase">QNTD. CENTRAL</TableHead>
                 <TableHead className="text-[10px] uppercase">STATUS</TableHead>
@@ -165,6 +166,9 @@ export default async function DashboardPage() {
                   <TableCell className="font-bold text-xs uppercase">{product.name}</TableCell>
                   <TableCell>
                     <Badge variant="outline" className="text-[10px]">{product.size || '-'}</Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="secondary" className="text-[10px] uppercase font-bold">{product.color || '-'}</Badge>
                   </TableCell>
                   <TableCell className="text-xs">{formatCurrency(product.price)}</TableCell>
                   <TableCell className="text-xs">
@@ -186,7 +190,7 @@ export default async function DashboardPage() {
               ))}
               {products.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={6} className="h-24 text-center text-muted-foreground uppercase text-xs">
+                  <TableCell colSpan={7} className="h-24 text-center text-muted-foreground uppercase text-xs">
                     NENHUM PRODUTO CADASTRADO NO ESTOQUE CENTRAL.
                   </TableCell>
                 </TableRow>

@@ -9,12 +9,13 @@ export async function getProducts() {
     });
 }
 
-export async function createProduct(data: { name: string; price: number; quantity: number; size?: string }) {
+export async function createProduct(data: { name: string; price: number; quantity: number; size?: string; color?: string }) {
     const product = await prisma.product.create({
         data: {
             ...data,
             name: data.name.toUpperCase(),
             size: data.size?.toUpperCase(),
+            color: data.color?.toUpperCase(),
         },
     });
 

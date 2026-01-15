@@ -71,16 +71,17 @@ export default async function ConsignmentPage() {
                                                         <Table>
                                                             <TableHeader className="bg-muted/30">
                                                                 <TableRow>
-                                                                    <TableHead className="text-[10px] uppercase h-9 pl-4">PRODUTO</TableHead>
-                                                                    <TableHead className="text-[10px] uppercase h-9 text-center">TAM.</TableHead>
-                                                                    <TableHead className="text-[10px] uppercase h-9 text-center">QNTD.</TableHead>
-                                                                    <TableHead className="text-[10px] uppercase h-9 text-right pr-6">AÇÕES</TableHead>
+                                                                    <TableHead className="text-[10px] uppercase h-12 pl-4">PRODUTO</TableHead>
+                                                                    <TableHead className="text-[10px] uppercase h-12 text-center w-[80px]">TAM.</TableHead>
+                                                                    <TableHead className="text-[10px] uppercase h-12 text-center w-[80px]">COR</TableHead>
+                                                                    <TableHead className="text-[10px] uppercase h-12 text-center w-[80px]">QNTD.</TableHead>
+                                                                    <TableHead className="text-[10px] uppercase h-12 text-right pr-6 w-[120px]">AÇÕES</TableHead>
                                                                 </TableRow>
                                                             </TableHeader>
                                                             <TableBody>
                                                                 {seller.consignments.length === 0 ? (
                                                                     <TableRow>
-                                                                        <TableCell colSpan={4} className="text-center py-10 text-muted-foreground text-xs italic uppercase">
+                                                                        <TableCell colSpan={5} className="text-center py-10 text-muted-foreground text-xs italic uppercase">
                                                                             NENHUM ITEM EM CONSIGNÇÃO
                                                                         </TableCell>
                                                                     </TableRow>
@@ -92,6 +93,9 @@ export default async function ConsignmentPage() {
                                                                             </TableCell>
                                                                             <TableCell className="text-center py-4">
                                                                                 <Badge variant="outline" className="text-[10px] px-1.5 h-5">{c.product.size || '-'}</Badge>
+                                                                            </TableCell>
+                                                                            <TableCell className="text-center py-4">
+                                                                                <Badge variant="secondary" className="text-[10px] px-1.5 h-5 uppercase font-bold">{c.product.color || '-'}</Badge>
                                                                             </TableCell>
                                                                             <TableCell className="text-center font-black py-4">
                                                                                 {c.quantity}
