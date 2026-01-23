@@ -21,6 +21,8 @@ import { Seller, MovementLog } from '@/types';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
+import { toast } from 'sonner';
+
 interface SellerReceiptDialogProps {
     seller: Seller;
     trigger?: React.ReactNode;
@@ -65,7 +67,120 @@ export function SellerReceiptDialog({ seller, trigger }: SellerReceiptDialogProp
         : 0;
 
     const handlePrint = () => {
-        window.print();
+        const printWindow = window.open('', '_blank');
+        if (!printWindow) {
+            toast.error('BLOQUEADOR DE POPUPS ATIVO. PERMITA PARA IMPRIMIR.');
+            return;
+        }
+
+        const printArea = document.querySelector('.print-area');
+        if (!printArea) return;
+
+        const content = printArea.innerHTML;
+        const sellerName = seller.name;
+
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>RECIBO - ${sellerName}</title>
+                    <style>
+                        body { 
+                            font-family: system-ui, -apple-system, sans-serif; 
+                            margin: 0; 
+                            padding: 0; 
+                            background: white;
+                            color: black;
+                            text-transform: uppercase;
+                        }
+                        * { box-sizing: border-box; }
+                        .print-area { width: 100%; padding: 1.5cm; }
+                        
+                        /* Layout Utilities */
+                        .flex { display: flex; }
+                        .flex-row { flex-direction: row; }
+                        .justify-between { justify-content: space-between; }
+                        .items-center { align-items: center; }
+                        .grid { display: grid; gap: 0.5rem; }
+                        .grid-cols-5 { grid-template-columns: repeat(5, 1fr); }
+                        .grid-cols-2 { grid-template-columns: 1fr 1fr; }
+                        
+                        /* Spacing */
+                        .space-y-4 > * + * { margin-top: 1rem; }
+                        .space-y-2 > * + * { margin-top: 0.5rem; }
+                        .space-y-1\\.5 > * + * { margin-top: 0.375rem; }
+                        .space-y-0\\.5 > * + * { margin-top: 0.125rem; }
+                        .p-2 { padding: 0.5rem; }
+                        .p-4 { padding: 1rem; }
+                        .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+                        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+                        .pb-1 { padding-bottom: 0.25rem; }
+                        .pb-4 { padding-bottom: 1rem; }
+                        .pt-6 { padding-top: 1.5rem; }
+                        .pt-1 { padding-top: 0.25rem; }
+                        
+                        /* Borders & Decor */
+                        .border { border: 1px solid #e4e4e7; }
+                        .border-2 { border: 2px solid #e4e4e7; }
+                        .border-b-2 { border-bottom: 2px solid #e4e4e7; }
+                        .border-t { border-top: 1px solid #000; }
+                        .border-black { border-color: #000; }
+                        .border-primary\\/10 { border-color: rgba(0,0,0,0.1); }
+                        .rounded-lg { border-radius: 0.5rem; }
+                        .rounded-2xl { border-radius: 1rem; }
+                        
+                        /* Colors */
+                        .bg-muted\\/20 { background: #f4f4f5; }
+                        .bg-primary\\/5 { background: #f8fafc; }
+                        .bg-muted\\/30 { background: #fafafa; }
+                        .bg-primary\\/10 { background: #f1f5f9; }
+                        .bg-muted\\/40 { background: #f1f1f2; }
+                        .text-primary { color: #000; }
+                        .text-blue-600 { color: #2563eb; }
+                        .text-orange-600 { color: #ea580c; }
+                        .text-green-600 { color: #16a34a; }
+                        .text-red-500 { color: #ef4444; }
+                        .text-red-700 { color: #b91c1c; }
+                        
+                        /* Typography */
+                        .text-xl { font-size: 1.25rem; }
+                        .text-sm { font-size: 0.875rem; }
+                        .text-xs { font-size: 0.75rem; }
+                        .text-\\[10px\\] { font-size: 10px; }
+                        .text-\\[9px\\] { font-size: 9px; }
+                        .text-\\[8px\\] { font-size: 8px; }
+                        .text-\\[7px\\] { font-size: 7px; }
+                        .font-black { font-weight: 900; }
+                        .font-bold { font-weight: 700; }
+                        .font-mono { font-family: monospace; }
+                        .tracking-tighter { letter-spacing: -0.05em; }
+                        .opacity-60 { opacity: 0.6; }
+                        .opacity-50 { opacity: 0.5; }
+                        
+                        /* Table */
+                        table { width: 100%; border-collapse: collapse; }
+                        th, td { padding: 0.25rem 0.5rem; text-align: left; }
+                        .text-center { text-align: center; }
+                        .text-right { text-align: right; }
+                        
+                        /* Print Specifics */
+                        .no-print { display: none !important; }
+                        .hidden { display: none; }
+                        .print\\:grid { display: grid !important; }
+                        @page { margin: 0; }
+                    </style>
+                </head>
+                <body>
+                    <div class="print-area">${content}</div>
+                    <script>
+                        window.onload = () => {
+                            window.print();
+                            // Optional: window.close(); // Some browsers block this
+                        };
+                    </script>
+                </body>
+            </html>
+        `);
+        printWindow.document.close();
     };
 
     return (
@@ -79,94 +194,6 @@ export function SellerReceiptDialog({ seller, trigger }: SellerReceiptDialogProp
                 )}
             </DialogTrigger>
             <DialogContent className="max-w-4xl w-[95vw] max-h-[90vh] overflow-y-auto scrollbar-hide">
-                <style jsx global>{`
-                    @media print {
-                        @page {
-                            margin: 10mm;
-                            size: auto;
-                        }
-                        body {
-                            background: white !important;
-                            color: black !important;
-                            margin: 0 !important;
-                            padding: 0 !important;
-                        }
-                        .no-print {
-                            display: none !important;
-                        }
-                        /* Reset containers for print */
-                        body * {
-                            visibility: hidden;
-                        }
-                        /* Force print area to be the main content */
-                        .print-area, .print-area * {
-                            visibility: visible !important;
-                        }
-                        .print-area {
-                            position: relative !important;
-                            visibility: visible !important;
-                            display: block !important;
-                            width: 100% !important;
-                            margin: 0 !important;
-                            padding: 0 !important;
-                            border: none !important;
-                            background: white !important;
-                            color: black !important;
-                            box-shadow: none !important;
-                        }
-                        /* Deep parent fix for Radix Dialog/Portals */
-                        div[data-slot="dialog-overlay"] {
-                            display: none !important;
-                        }
-                        div[data-slot="dialog-content"],
-                        div[data-slot="dialog-portal"],
-                        div[role="dialog"] {
-                            position: static !important;
-                            display: block !important;
-                            visibility: visible !important;
-                            overflow: visible !important;
-                            max-height: none !important;
-                            max-width: none !important;
-                            width: 100% !important;
-                            padding: 0 !important;
-                            margin: 0 !important;
-                            border: none !important;
-                            box-shadow: none !important;
-                            background: transparent !important;
-                            transform: none !important;
-                        }
-
-                        /* Prevent clipping on parents */
-                        div, section, main, article {
-                            overflow: visible !important;
-                        }
-
-                        /* Table and Card print polish */
-                        .print-area table {
-                            width: 100% !important;
-                            border-collapse: collapse !important;
-                        }
-                        .print-area .bg-primary\/5, 
-                        .print-area .bg-muted\/30,
-                        .print-area .bg-muted\/20 {
-                            background-color: #f9fafb !important; /* Very light gray for print */
-                            print-color-adjust: exact;
-                        }
-                        
-                        /* Table page break fixes */
-                        table { page-break-inside: auto; }
-                        tr { page-break-inside: avoid; page-break-after: auto; }
-                        thead { display: table-header-group; }
-                        tfoot { display: table-footer-group; }
-                    }
-                `}</style>
-
-                <DialogHeader className="no-print">
-                    <DialogTitle className="flex items-center gap-2 uppercase font-black">
-                        <Calculator className="h-5 w-5 text-primary" />
-                        RECIBO E ACERTO DE CONTAS
-                    </DialogTitle>
-                </DialogHeader>
 
                 <div className="space-y-6 py-4 uppercase font-bold">
                     {/* CONFIGURATIONS - NO PRINT */}
@@ -198,98 +225,94 @@ export function SellerReceiptDialog({ seller, trigger }: SellerReceiptDialogProp
                     </div>
 
                     {/* PRINT AREA */}
-                    <div className="print-area space-y-8 p-4 md:p-8 border-2 border-primary/5 rounded-2xl bg-white dark:bg-zinc-950">
+                    <div className="print-area space-y-4 p-4 md:p-8 border-2 border-primary/5 rounded-2xl bg-white dark:bg-zinc-950">
                         {/* HEADER RECIBO */}
-                        <div className="flex flex-col md:flex-row justify-between items-start gap-4 border-b-2 border-primary/10 pb-6">
-                            <div className="space-y-1">
-                                <h2 className="text-2xl font-black tracking-tighter text-primary">RECIBO DE ACERTO</h2>
-                                <p className="text-xs opacity-60">SISTEMA DE GESTÃO DE ESTOQUE</p>
+                        <div className="flex flex-row justify-between items-center border-b-2 border-primary/10 pb-4">
+                            <div className="space-y-0.5">
+                                <h2 className="text-xl font-black tracking-tighter text-primary">RECIBO DE ACERTO</h2>
+                                <p className="text-[8px] opacity-60">SISTEMA DE GESTÃO DE ESTOQUE</p>
                             </div>
-                            <div className="text-right space-y-1">
+                            <div className="text-right space-y-0.5">
                                 <p className="text-sm font-black">{seller.name}</p>
-                                <p className="text-[10px] opacity-60">{seller.cpf} | {seller.phone}</p>
-                                <p className="text-[10px] font-mono">{format(new Date(), "dd/MM/yyyy HH:mm", { locale: ptBR })}</p>
+                                <p className="text-[9px] opacity-60">{seller.cpf} | {seller.phone}</p>
+                                <p className="text-[9px] font-mono">{format(new Date(), "dd/MM/yyyy HH:mm", { locale: ptBR })}</p>
                             </div>
                         </div>
 
                         {/* STATS GRID */}
-                        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                            <div className="p-3 bg-muted/20 rounded-xl border border-border/50">
-                                <span className="text-[8px] opacity-50 block mb-1">QTD. ENTREGUE</span>
-                                <span className="text-lg font-black">{stats?.qtyDelivered || 0}</span>
+                        <div className="grid grid-cols-5 gap-2">
+                            <div className="p-2 bg-muted/20 rounded-lg border border-border/50">
+                                <span className="text-[7px] opacity-50 block mb-0.5">QTD. ENTREGUE</span>
+                                <span className="text-sm font-black">{stats?.qtyDelivered || 0}</span>
                             </div>
-                            <div className="p-3 bg-muted/20 rounded-xl border border-border/50">
-                                <span className="text-[8px] opacity-50 block mb-1">QTD. EM POSSE</span>
-                                <span className="text-lg font-black text-blue-600">{stats?.qtyCurrent || 0}</span>
+                            <div className="p-2 bg-muted/20 rounded-lg border border-border/50">
+                                <span className="text-[7px] opacity-50 block mb-0.5">QTD. EM POSSE</span>
+                                <span className="text-sm font-black text-blue-600">{stats?.qtyCurrent || 0}</span>
                             </div>
-                            <div className="p-3 bg-muted/20 rounded-xl border border-border/50">
-                                <span className="text-[8px] opacity-50 block mb-1">QTD. DEVOLVIDA</span>
-                                <span className="text-lg font-black text-orange-600">{stats?.qtyReturned || 0}</span>
+                            <div className="p-2 bg-muted/20 rounded-lg border border-border/50">
+                                <span className="text-[7px] opacity-50 block mb-0.5">QTD. DEVOLVIDA</span>
+                                <span className="text-sm font-black text-orange-600">{stats?.qtyReturned || 0}</span>
                             </div>
-                            <div className="p-3 bg-muted/20 rounded-xl border border-border/50">
-                                <span className="text-[8px] opacity-50 block mb-1">QTD. VENDIDA</span>
-                                <span className="text-lg font-black text-green-600">{stats?.qtySold || 0}</span>
+                            <div className="p-2 bg-muted/20 rounded-lg border border-border/50">
+                                <span className="text-[7px] opacity-50 block mb-0.5">QTD. VENDIDA</span>
+                                <span className="text-sm font-black text-green-600">{stats?.qtySold || 0}</span>
                             </div>
-                            <div className="p-3 bg-muted/20 rounded-xl border border-border/50">
-                                <span className="text-[8px] opacity-50 block mb-1">% PERFORMANCE</span>
-                                <span className="text-lg font-black text-primary">{salesPerformance.toFixed(1)}%</span>
+                            <div className="p-2 bg-muted/20 rounded-lg border border-border/50">
+                                <span className="text-[7px] opacity-50 block mb-0.5">% PERFORM.</span>
+                                <span className="text-sm font-black text-primary">{salesPerformance.toFixed(1)}%</span>
                             </div>
                         </div>
 
                         {/* FINANCIAL SUMMARY */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <Card className="border-none shadow-none bg-primary/5">
-                                <CardHeader className="pb-2">
-                                    <CardTitle className="text-[10px] font-black opacity-50">RESUMO FINANCEIRO</CardTitle>
+                        <div className="grid grid-cols-2 gap-4">
+                            <Card className="border-none shadow-none bg-primary/5 py-4">
+                                <CardHeader className="pb-1 px-4">
+                                    <CardTitle className="text-[8px] font-black opacity-50">RESUMO FINANCEIRO</CardTitle>
                                 </CardHeader>
-                                <CardContent className="space-y-3">
-                                    <div className="flex justify-between items-center text-xs">
-                                        <span>VALOR DO PEDIDO (TOTAL)</span>
+                                <CardContent className="space-y-1.5 px-4">
+                                    <div className="flex justify-between items-center text-[10px]">
+                                        <span>VALOR DO PEDIDO</span>
                                         <span className="font-black">{formatCurrency(stats?.valDelivered || 0)}</span>
                                     </div>
-                                    <div className="flex justify-between items-center text-xs text-green-600 font-black">
+                                    <div className="flex justify-between items-center text-[10px] text-green-600 font-black">
                                         <span>VL. TOTAL VENDIDO</span>
                                         <span>{formatCurrency(valSold)}</span>
                                     </div>
-                                    <div className="flex justify-between items-center text-xs border-t border-primary/10 pt-2">
+                                    <div className="flex justify-between items-center text-[10px] border-t border-primary/10 pt-1">
                                         <span>COMISSÃO ({commission}%)</span>
                                         <span className="text-red-500">-{formatCurrency(commissionVal)}</span>
                                     </div>
-                                    <div className="flex justify-between items-center text-sm font-black bg-primary/10 p-2 rounded">
-                                        <span>VL. LÍQUIDO (A PAGAR)</span>
+                                    <div className="flex justify-between items-center text-[10px] font-black bg-primary/10 p-1 rounded">
+                                        <span>VL. LÍQUIDO</span>
                                         <span>{formatCurrency(amountToPay)}</span>
                                     </div>
                                 </CardContent>
                             </Card>
 
-                            <Card className="border-none shadow-none bg-muted/30">
-                                <CardHeader className="pb-2">
-                                    <CardTitle className="text-[10px] font-black opacity-50">SITUAÇÃO DE PAGAMENTO</CardTitle>
+                            <Card className="border-none shadow-none bg-muted/30 py-4">
+                                <CardHeader className="pb-1 px-4">
+                                    <CardTitle className="text-[8px] font-black opacity-50">SITUAÇÃO DE PAGAMENTO</CardTitle>
                                 </CardHeader>
-                                <CardContent className="space-y-3">
-                                    <div className="flex justify-between items-center text-xs">
-                                        <span>TOTAL DEVIDO</span>
-                                        <span className="font-black">{formatCurrency(amountToPay)}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center text-xs text-blue-600">
+                                <CardContent className="space-y-1.5 px-4">
+                                    <div className="flex justify-between items-center text-[10px]">
                                         <span>VALOR RECEBIDO</span>
                                         <span className="font-black">{formatCurrency(paidAmount)}</span>
                                     </div>
-                                    <div className={`flex justify-between items-center p-2 rounded border-2 ${balance > 0 ? 'bg-red-50 border-red-200 text-red-700' : 'bg-green-50 border-green-200 text-green-700'}`}>
-                                        <span className="text-[10px] font-black">{balance > 0 ? 'RESTANTE A PAGAR' : 'SALDO QUITADO'}</span>
-                                        <span className="text-lg font-black">{formatCurrency(Math.abs(balance))}</span>
+                                    <div className={`flex justify-between items-center p-1.5 rounded border ${balance > 0 ? 'bg-red-50 border-red-200 text-red-700' : 'bg-green-50 border-green-200 text-green-700'}`}>
+                                        <span className="text-[8px] font-black">{balance > 0 ? 'RESTANTE' : 'QUITADO'}</span>
+                                        <span className="text-sm font-black">{formatCurrency(Math.abs(balance))}</span>
                                     </div>
                                 </CardContent>
                             </Card>
                         </div>
 
-                        {/* HISTORY SECTION */}
-                        <div className="space-y-4">
-                            <h3 className="text-xs font-black flex items-center gap-2">
-                                <History className="h-4 w-4" />
-                                DETALHAMENTO DE MOVIMENTAÇÕES (HISTÓRICO DIÁRIO)
+                        {/* HISTORY SECTION - COMPACT */}
+                        <div className="space-y-2">
+                            <h3 className="text-[9px] font-black flex items-center gap-1.5">
+                                <History className="h-3 w-3" />
+                                DETALHAMENTO DE MOVIMENTAÇÕES
                             </h3>
-                            <div className="space-y-6">
+                            <div className="grid grid-cols-1 gap-2">
                                 {Object.entries(
                                     logs.filter(l => l.type === 'SALE' || l.type === 'RETURN').reduce((acc, log) => {
                                         const dateKey = format(new Date(log.timestamp), 'dd/MM/yyyy');
@@ -297,67 +320,47 @@ export function SellerReceiptDialog({ seller, trigger }: SellerReceiptDialogProp
                                         acc[dateKey].push(log);
                                         return acc;
                                     }, {} as Record<string, MovementLog[]>)
-                                ).map(([date, dayLogs]) => (
-                                    <div key={date} className="space-y-2">
-                                        <div className="bg-muted/40 px-4 py-1.5 rounded-t-lg border-x border-t border-border/50">
-                                            <span className="text-[10px] font-black text-primary flex items-center gap-2">
-                                                <Calendar className="h-3 w-3" />
-                                                DIA {date}
-                                            </span>
+                                ).slice(0, 8).map(([date, dayLogs]) => ( // Limit to 8 days to fit page
+                                    <div key={date} className="border border-border/50 rounded-lg overflow-hidden">
+                                        <div className="bg-muted/40 px-2 py-0.5 border-b border-border/50 flex justify-between items-center">
+                                            <span className="text-[8px] font-black text-primary">DIA {date}</span>
                                         </div>
-                                        <div className="border border-border/50 rounded-b-xl overflow-hidden">
-                                            <Table>
-                                                <TableHeader className="bg-muted/20">
-                                                    <TableRow>
-                                                        <TableHead className="text-[9px] h-8 text-center w-[80px]">TIPO</TableHead>
-                                                        <TableHead className="text-[9px] h-8">PRODUTO</TableHead>
-                                                        <TableHead className="text-[9px] h-8 text-center">QTD</TableHead>
-                                                        <TableHead className="text-[9px] h-8 text-right pr-4">VALOR UNIT.</TableHead>
+                                        <Table>
+                                            <TableBody>
+                                                {dayLogs.map((log) => (
+                                                    <TableRow key={log.id} className="text-[8px] border-b last:border-0">
+                                                        <TableCell className="text-center py-1 w-10">
+                                                            <span className={log.type === 'SALE' ? 'text-green-600 font-bold' : 'text-orange-600 font-bold'}>
+                                                                {log.type === 'SALE' ? 'VENDA' : 'DEV.'}
+                                                            </span>
+                                                        </TableCell>
+                                                        <TableCell className="py-1">
+                                                            <span>{log.product.name}</span>
+                                                        </TableCell>
+                                                        <TableCell className="text-center py-1 font-black w-8">
+                                                            {log.quantity}
+                                                        </TableCell>
+                                                        <TableCell className="text-right pr-2 py-1 w-16">
+                                                            {formatCurrency(log.product.price)}
+                                                        </TableCell>
                                                     </TableRow>
-                                                </TableHeader>
-                                                <TableBody>
-                                                    {dayLogs.map((log) => (
-                                                        <TableRow key={log.id} className="text-[10px]">
-                                                            <TableCell className="text-center py-2">
-                                                                <Badge variant={log.type === 'SALE' ? 'default' : 'outline'} className="text-[8px] h-4 px-1">
-                                                                    {log.type === 'SALE' ? 'VENDA' : 'DEVOL.'}
-                                                                </Badge>
-                                                            </TableCell>
-                                                            <TableCell className="py-2">
-                                                                <div className="flex flex-col">
-                                                                    <span>{log.product.name}</span>
-                                                                    <span className="text-[8px] opacity-50 font-medium">REF: {log.product.reference || '-'}</span>
-                                                                </div>
-                                                            </TableCell>
-                                                            <TableCell className="text-center py-2 font-black">
-                                                                {log.type === 'SALE' ? (
-                                                                    <span className="text-green-600">+{log.quantity}</span>
-                                                                ) : (
-                                                                    <span className="text-orange-600">-{log.quantity}</span>
-                                                                )}
-                                                            </TableCell>
-                                                            <TableCell className="text-right pr-4 py-2">
-                                                                {formatCurrency(log.product.price)}
-                                                            </TableCell>
-                                                        </TableRow>
-                                                    ))}
-                                                </TableBody>
-                                            </Table>
-                                        </div>
+                                                ))}
+                                            </TableBody>
+                                        </Table>
                                     </div>
                                 ))}
                             </div>
                         </div>
 
-                        {/* SIGNATURES - FOR PRINT */}
-                        <div className="hidden print:grid grid-cols-2 gap-12 pt-16">
-                            <div className="border-t border-black text-center pt-2">
-                                <p className="text-[10px] font-black">{seller.name}</p>
-                                <p className="text-[8px] opacity-60 uppercase">ASSINATURA DO VENDEDOR</p>
+                        {/* SIGNATURES - COMPACT */}
+                        <div className="hidden print:grid grid-cols-2 gap-8 pt-6">
+                            <div className="border-t border-black text-center pt-1">
+                                <p className="text-[9px] font-black">{seller.name}</p>
+                                <p className="text-[7px] opacity-60 uppercase">VENDEDOR</p>
                             </div>
-                            <div className="border-t border-black text-center pt-2">
-                                <p className="text-[10px] font-black">ADMINISTRAÇÃO</p>
-                                <p className="text-[8px] opacity-60 uppercase">CARIMBO E ASSINATURA</p>
+                            <div className="border-t border-black text-center pt-1">
+                                <p className="text-[9px] font-black">ADMINISTRAÇÃO</p>
+                                <p className="text-[7px] opacity-60 uppercase">CARIMBO E ASSINATURA</p>
                             </div>
                         </div>
                     </div>
@@ -368,7 +371,7 @@ export function SellerReceiptDialog({ seller, trigger }: SellerReceiptDialogProp
                         </Button>
                         <Button onClick={handlePrint} className="gap-2 uppercase font-black text-xs">
                             <Printer className="h-4 w-4" />
-                            IMPRIMIR RECIBO
+                            IMPRIMIR
                         </Button>
                     </div>
                 </div>
