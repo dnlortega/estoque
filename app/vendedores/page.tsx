@@ -39,8 +39,8 @@ export default async function SellersPage() {
                     {/* MOBILE VIEW (CARDS) */}
                     <StaggerContainer className="grid grid-cols-1 gap-4 md:hidden p-4">
                         {sellers.map((seller: Seller) => {
-                            const totalQty = seller.consignments.reduce((acc, c) => acc + c.quantity, 0);
-                            const totalValue = seller.consignments.reduce((acc, c) => acc + (c.quantity * c.product.price), 0);
+                            const totalQty = seller.consignments.reduce((acc, c) => acc + (c.quantity || 0), 0);
+                            const totalValue = seller.consignments.reduce((acc, c) => acc + ((c.quantity || 0) * (c.product?.price || 0)), 0);
 
                             return (
                                 <StaggerItem key={seller.id}>
