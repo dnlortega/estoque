@@ -28,7 +28,7 @@ export function WhatsAppShare({ seller }: WhatsAppShareProps) {
 
             seller.consignments.forEach((c) => {
                 const subtotal = c.quantity * c.product.price;
-                message += `• ${c.product.name} (TAM: ${c.product.size || '-'} | COR: ${c.product.color || '-'}) \n`;
+                message += `• ${c.product.name} (REF: ${c.product.reference || '-'}) \n`;
                 message += `  QNTD: ${c.quantity} | UN: ${formatCurrency(c.product.price)} \n\n`;
                 totalVal += subtotal;
                 totalQty += c.quantity;

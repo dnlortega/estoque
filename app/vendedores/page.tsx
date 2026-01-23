@@ -50,7 +50,7 @@ export default async function SellersPage() {
                                                 <span className="font-black text-sm tracking-tight">{seller.name}</span>
                                                 <div className="flex items-center gap-1.5 text-[10px] font-mono opacity-50">
                                                     <CreditCard className="h-3 w-3" />
-                                                    {seller.cpf}
+                                                    {seller.cpf ? seller.cpf : (seller.rg ? `RG: ${seller.rg}` : '-')}
                                                 </div>
                                             </div>
                                             <SellerActions seller={seller} />
@@ -123,7 +123,7 @@ export default async function SellersPage() {
                                                     </span>
                                                     <div className="flex items-center gap-1.5 text-[9px] font-mono opacity-50">
                                                         <CreditCard className="h-3 w-3" />
-                                                        {seller.cpf}
+                                                        {seller.cpf ? seller.cpf : (seller.rg ? `RG: ${seller.rg}` : '-')}
                                                     </div>
                                                 </div>
                                             </TableCell>
