@@ -123,7 +123,7 @@ export default async function DashboardPage() {
                   <TableHeader className="bg-muted/50">
                     <TableRow>
                       <TableHead className="text-[10px] h-9 uppercase pl-4">PRODUTO</TableHead>
-                      <TableHead className="text-[10px] h-9 uppercase text-center">TAM.</TableHead>
+                      <TableHead className="text-[10px] h-9 uppercase text-center">REFERÊNCIA</TableHead>
                       <TableHead className="text-[10px] h-9 uppercase text-right pr-6">QNTD.</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -141,7 +141,7 @@ export default async function DashboardPage() {
                             {p.name}
                           </TableCell>
                           <TableCell className="text-center py-3">
-                            <Badge variant="outline" className="text-[10px] h-5 px-1.5">{p.size || '-'}</Badge>
+                            <Badge variant="outline" className="text-[10px] h-5 px-1.5">{p.reference || '-'}</Badge>
                           </TableCell>
                           <TableCell className="text-right pr-6 py-3 font-black text-red-600 text-sm">
                             {p.quantity}
@@ -175,8 +175,7 @@ export default async function DashboardPage() {
                       <div className="space-y-1">
                         <p className="font-black text-sm uppercase leading-tight">{product.name}</p>
                         <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-                          <Badge variant="outline" className="h-5 px-1.5">{product.size || 'UN'}</Badge>
-                          {product.color && <Badge variant="secondary" className="h-5 px-1.5 bg-background">{product.color}</Badge>}
+                          <Badge variant="outline" className="h-5 px-1.5">REF: {product.reference || '-'}</Badge>
                         </div>
                       </div>
                       <div>
@@ -220,8 +219,7 @@ export default async function DashboardPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="text-[10px] uppercase">PRODUTO</TableHead>
-                    <TableHead className="text-[10px] uppercase">TAMANHO</TableHead>
-                    <TableHead className="text-[10px] uppercase">COR</TableHead>
+                    <TableHead className="text-[10px] uppercase">REFERÊNCIA</TableHead>
                     <TableHead className="text-[10px] uppercase">PREÇO</TableHead>
                     <TableHead className="text-[10px] uppercase">QNTD. CENTRAL</TableHead>
                     <TableHead className="text-[10px] uppercase">STATUS</TableHead>
@@ -233,10 +231,7 @@ export default async function DashboardPage() {
                     <TableRow key={product.id}>
                       <TableCell className="font-bold text-xs uppercase">{product.name}</TableCell>
                       <TableCell>
-                        <Badge variant="outline" className="text-[10px]">{product.size || '-'}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="secondary" className="text-[10px] uppercase font-bold">{product.color || '-'}</Badge>
+                        <Badge variant="outline" className="text-[10px]">{product.reference || '-'}</Badge>
                       </TableCell>
                       <TableCell className="text-xs">{formatCurrency(product.price)}</TableCell>
                       <TableCell className="text-xs">
