@@ -53,7 +53,7 @@ export default async function ConsignmentPage() {
                                                             {seller.name}
                                                         </span>
                                                         <span className="text-[10px] text-muted-foreground font-mono">
-                                                            {seller.cpf}
+                                                            {seller.cpf ? seller.cpf : (seller.rg ? `RG: ${seller.rg}` : '-')}
                                                         </span>
                                                     </button>
                                                 </DialogTrigger>
@@ -235,7 +235,7 @@ export default async function ConsignmentPage() {
                                                 </Dialog>
                                             </TableCell>
                                             <TableCell className="text-muted-foreground text-xs font-mono uppercase">
-                                                {seller.cpf} | {seller.phone}
+                                                {seller.cpf ? seller.cpf : (seller.rg ? `RG: ${seller.rg}` : '-')} | {seller.phone}
                                             </TableCell>
                                             <TableCell className="text-center">
                                                 <Badge variant={totalQty > 0 ? "default" : "outline"} className={totalQty > 0 ? "bg-primary/90" : ""}>
