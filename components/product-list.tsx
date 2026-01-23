@@ -21,8 +21,7 @@ export function ProductList({ initialProducts }: ProductListProps) {
 
     const filteredProducts = initialProducts.filter(p =>
         p.name.toLowerCase().includes(search.toLowerCase()) ||
-        (p.color && p.color.toLowerCase().includes(search.toLowerCase())) ||
-        (p.size && p.size.toLowerCase().includes(search.toLowerCase()))
+        (p.reference && p.reference.toLowerCase().includes(search.toLowerCase()))
     );
 
     return (
@@ -32,7 +31,7 @@ export function ProductList({ initialProducts }: ProductListProps) {
                 <div className="relative w-full md:w-96">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
-                        placeholder="BUSCAR PRODUTO, COR..."
+                        placeholder="BUSCAR PRODUTO, REFERÊNCIA..."
                         className="pl-10 font-bold h-12 md:h-11 bg-card/50 shadow-sm border-primary/10"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
@@ -58,10 +57,7 @@ export function ProductList({ initialProducts }: ProductListProps) {
 
                             <div className="flex flex-wrap gap-2 text-[10px] font-bold">
                                 <Badge variant="outline" className="gap-1 px-1.5 h-6">
-                                    <Ruler className="h-3 w-3 opacity-50" /> {product.size || '-'}
-                                </Badge>
-                                <Badge variant="secondary" className="gap-1 px-1.5 h-6 bg-primary/10 text-primary border-none">
-                                    <Palette className="h-3 w-3 opacity-50" /> {product.color || '-'}
+                                    REF: {product.reference || '-'}
                                 </Badge>
                                 <Badge variant={product.quantity < 5 ? "destructive" : "secondary"} className="h-6 gap-1 border-none">
                                     <Package className="h-3 w-3 opacity-50" /> {product.quantity} QTD
@@ -90,8 +86,7 @@ export function ProductList({ initialProducts }: ProductListProps) {
                         <TableHeader className="bg-muted/40">
                             <TableRow className="border-none">
                                 <TableHead className="text-[10px] font-black h-12 px-6">PRODUTO</TableHead>
-                                <TableHead className="text-[10px] font-black h-12 text-center w-[100px]">TAM.</TableHead>
-                                <TableHead className="text-[10px] font-black h-12 text-center w-[120px]">COR</TableHead>
+                                <TableHead className="text-[10px] font-black h-12 text-center w-[150px]">REFERÊNCIA</TableHead>
                                 <TableHead className="text-[10px] font-black h-12 text-center w-[120px]">PREÇO</TableHead>
                                 <TableHead className="text-[10px] font-black h-12 text-center w-[100px]">QTD</TableHead>
                                 <TableHead className="text-[10px] font-black h-12 text-right pr-6 w-[120px]">AÇÕES</TableHead>
@@ -102,12 +97,7 @@ export function ProductList({ initialProducts }: ProductListProps) {
                                 <TableRow key={product.id} className="hover:bg-primary/[0.02] transition-colors border-b border-primary/5 last:border-0 group">
                                     <TableCell className="font-black text-xs px-6 py-5 group-hover:text-primary transition-colors">{product.name}</TableCell>
                                     <TableCell className="text-center py-5">
-                                        <Badge variant="outline" className="text-[10px] font-bold h-6">{product.size || '-'}</Badge>
-                                    </TableCell>
-                                    <TableCell className="text-center py-5">
-                                        <Badge variant="secondary" className="text-[10px] font-black h-6 px-3 bg-primary/10 text-primary border-none">
-                                            {product.color || '-'}
-                                        </Badge>
+                                        <Badge variant="outline" className="text-[10px] font-bold h-6">{product.reference || '-'}</Badge>
                                     </TableCell>
                                     <TableCell className="text-center py-5 text-xs font-black">{formatCurrency(product.price)}</TableCell>
                                     <TableCell className="text-center py-5 font-black text-sm">

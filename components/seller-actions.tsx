@@ -6,9 +6,10 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { toast } from 'sonner';
-import { Pencil, Trash2, MoreHorizontal, AlertTriangle, Check, X } from 'lucide-react';
+import { Pencil, Trash2, MoreHorizontal, AlertTriangle, Check, X, FileText } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import { SellerReceiptDialog } from './seller-receipt-dialog';
 import {
     Dialog,
     DialogContent,
@@ -114,6 +115,15 @@ export function SellerActions({ seller }: SellerActionsProps) {
                         <Pencil className="mr-2 h-4 w-4" />
                         EDITAR
                     </DropdownMenuItem>
+                    <SellerReceiptDialog
+                        seller={seller}
+                        trigger={
+                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                <FileText className="mr-2 h-4 w-4" />
+                                RECIBO / ACERTO
+                            </DropdownMenuItem>
+                        }
+                    />
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                         onClick={() => setIsDeleteDialogOpen(true)}

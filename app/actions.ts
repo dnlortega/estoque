@@ -9,13 +9,12 @@ export async function getProducts() {
     });
 }
 
-export async function createProduct(data: { name: string; price: number; quantity: number; size?: string; color?: string }) {
+export async function createProduct(data: { name: string; price: number; quantity: number; reference?: string }) {
     const product = await prisma.product.create({
         data: {
             ...data,
             name: data.name.toUpperCase(),
-            size: data.size?.toUpperCase(),
-            color: data.color?.toUpperCase(),
+            reference: data.reference?.toUpperCase(),
         },
     });
 
@@ -298,4 +297,46 @@ export async function deleteLog(id: string) {
     revalidatePath('/historico');
     revalidatePath('/');
     revalidatePath('/consignacao');
+}
+
+export async function getSellerLogs(sellerId: string) {
+    return await prisma.movementLog.findMany({
+        where: { sellerId },
+        orderBy: { timestamp: 'desc' },
+        include: {
+            product: true,
+        },
+    });
+}
+
+export async function getSellerReceiptData(sellerId: string) {
+    const logs = await prisma.movementLog.findMany({
+        where: { sellerId },
+        include: { product: true },
+    });
+
+    const delivered = logs.filter(l => l.type === 'TRANSFER');
+    const returned = logs.filter(l => l.type === 'RETURN');
+    const sold = logs.filter(l => l.type === 'SALE');
+
+    const qtyDelivered = delivered.reduce((acc, l) => acc + l.quantity, 0);
+    const qtyReturned = returned.reduce((acc, l) => acc + l.quantity, 0);
+    const qtySold = sold.reduce((acc, l) => acc + l.quantity, 0);
+
+    const valDelivered = delivered.reduce((acc, l) => acc + (l.quantity * l.product.price), 0);
+    const valSold = sold.reduce((acc, l) => acc + (l.quantity * l.product.price), 0);
+
+    const currentConsignments = await prisma.consignment.findMany({
+        where: { sellerId },
+    });
+    const qtyCurrent = currentConsignments.reduce((acc, c) => acc + c.quantity, 0);
+
+    return {
+        qtyDelivered,
+        qtyReturned,
+        qtySold,
+        qtyCurrent,   // QTD ITENS (em posse)
+        valDelivered, // VALOR PEDIDO
+        valSold,      // VL TOTAL VENDA
+    };
 }

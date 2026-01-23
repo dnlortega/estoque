@@ -5,8 +5,7 @@ export interface Product {
     name: string;
     price: number;
     quantity: number;
-    size?: string;
-    color?: string;
+    reference?: string;
     createdAt: Date;
     updatedAt: Date;
     consignments?: Consignment[];

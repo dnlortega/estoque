@@ -33,16 +33,14 @@ const productSchema = z.object({
     name: z.string().min(1, 'NOME É OBRIGATÓRIO'),
     price: z.string().refine((v) => !isNaN(parseFloat(v)) && parseFloat(v) > 0, 'PREÇO DEVE SER MAIOR QUE ZERO'),
     quantity: z.string().refine((v) => !isNaN(parseInt(v)) && parseInt(v) >= 0, 'QUANTIDADE NÃO PODE SER NEGATIVA'),
-    size: z.string().min(1, 'TAMANHO É OBRIGATÓRIO'),
-    color: z.string().min(1, 'COR É OBRIGATÓRIA'),
+    reference: z.string().optional(),
 });
 
 type ProductFormValues = {
     name: string;
     price: string;
     quantity: string;
-    size: string;
-    color: string;
+    reference: string;
 };
 
 export function CreateProductDialog() {
@@ -54,8 +52,7 @@ export function CreateProductDialog() {
             name: '',
             price: '0',
             quantity: '0',
-            size: '',
-            color: '',
+            reference: '',
         },
     });
 
@@ -65,8 +62,7 @@ export function CreateProductDialog() {
                 name: data.name,
                 price: parseFloat(data.price),
                 quantity: parseInt(data.quantity),
-                size: data.size,
-                color: data.color,
+                reference: data.reference,
             });
             toast.success('PRODUTO CRIADO COM SUCESSO!');
             setOpen(false);
@@ -100,39 +96,12 @@ export function CreateProductDialog() {
                         )}
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="size">TAMANHO</Label>
-                            <Select
-                                onValueChange={(value) => form.setValue('size', value)}
-                                value={form.watch('size')}
-                            >
-                                <SelectTrigger id="size">
-                                    <SelectValue placeholder="TAM." />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="P">P</SelectItem>
-                                    <SelectItem value="M">M</SelectItem>
-                                    <SelectItem value="G">G</SelectItem>
-                                    <SelectItem value="GG">GG</SelectItem>
-                                    <SelectItem value="XG">XG</SelectItem>
-                                    <SelectItem value="ÚNICO">ÚNICO</SelectItem>
-                                    <SelectItem value="42">42</SelectItem>
-                                    <SelectItem value="44">44</SelectItem>
-                                    <SelectItem value="46">46</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            {form.formState.errors.size && (
-                                <p className="text-[10px] text-red-500">{form.formState.errors.size.message}</p>
-                            )}
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="color">COR</Label>
-                            <Input id="color" {...form.register('color')} placeholder="EX: PRETO" />
-                            {form.formState.errors.color && (
-                                <p className="text-[10px] text-red-500">{form.formState.errors.color.message}</p>
-                            )}
-                        </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="reference">REFERÊNCIA</Label>
+                        <Input id="reference" {...form.register('reference')} placeholder="EX: REF123" />
+                        {form.formState.errors.reference && (
+                            <p className="text-[10px] text-red-500">{form.formState.errors.reference.message}</p>
+                        )}
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">

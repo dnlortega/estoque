@@ -3,10 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { TransferDialog } from '@/components/transfer-dialog';
 import { ConsignmentActions } from '@/components/consignment-actions';
+import { SellerReceiptDialog } from '@/components/seller-receipt-dialog';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency } from '@/lib/utils';
 import { Product, Seller } from '@/types';
-import { User, Package, HandCoins, ChevronRight } from 'lucide-react';
+import { User, Package, HandCoins, ChevronRight, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -69,6 +70,14 @@ export default async function ConsignmentPage() {
                                                     <Badge variant={totalQty > 0 ? "default" : "secondary"} className="text-[10px] h-6 px-2 font-bold">
                                                         {totalQty} ITENS
                                                     </Badge>
+                                                    <SellerReceiptDialog
+                                                        seller={seller}
+                                                        trigger={
+                                                            <Button size="icon" variant="outline" className="h-7 w-7">
+                                                                <FileText className="h-3.5 w-3.5" />
+                                                            </Button>
+                                                        }
+                                                    />
                                                 </div>
                                                 <DialogTrigger asChild>
                                                     <Button size="sm" variant="outline" className="h-7 text-[10px] uppercase font-bold px-3">
@@ -89,7 +98,8 @@ export default async function ConsignmentPage() {
                                                     <TableHeader className="bg-muted/30">
                                                         <TableRow>
                                                             <TableHead className="text-[10px] uppercase h-12 pl-4">PRODUTO</TableHead>
-                                                            <TableHead className="text-[10px] uppercase h-12 text-center w-[60px]">QTD.</TableHead>
+                                                            <TableHead className="text-[10px] uppercase h-12 text-center w-[120px]">REFERÊNCIA</TableHead>
+                                                            <TableHead className="text-[10px] uppercase h-12 text-center w-[60px]">QNTD.</TableHead>
                                                             <TableHead className="text-[10px] uppercase h-12 text-right pr-6 w-[100px]">AÇÕES</TableHead>
                                                         </TableRow>
                                                     </TableHeader>
@@ -106,11 +116,10 @@ export default async function ConsignmentPage() {
                                                                     <TableCell className="py-3 pl-4">
                                                                         <div className="flex flex-col">
                                                                             <span className="text-xs font-bold uppercase">{c.product.name}</span>
-                                                                            <span className="text-[10px] text-muted-foreground flex items-center gap-2">
-                                                                                {c.product.size && <Badge variant="outline" className="h-4 px-1 text-[9px]">{c.product.size}</Badge>}
-                                                                                {c.product.color && <span>{c.product.color}</span>}
-                                                                            </span>
                                                                         </div>
+                                                                    </TableCell>
+                                                                    <TableCell className="text-center py-3">
+                                                                        <Badge variant="outline" className="h-4 px-1 text-[9px]">{c.product.reference || '-'}</Badge>
                                                                     </TableCell>
                                                                     <TableCell className="text-center font-black py-3 text-sm">
                                                                         {c.quantity}
@@ -150,7 +159,8 @@ export default async function ConsignmentPage() {
                                     <TableHead className="pl-6">VENDEDOR</TableHead>
                                     <TableHead>CPF | CELULAR</TableHead>
                                     <TableHead className="text-center">ITENS TOTAIS</TableHead>
-                                    <TableHead className="text-right pr-6">VALOR EM POSSE</TableHead>
+                                    <TableHead className="text-right">VALOR EM POSSE</TableHead>
+                                    <TableHead className="text-right pr-6 w-[100px]">RECIBO</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -183,8 +193,7 @@ export default async function ConsignmentPage() {
                                                                 <TableHeader className="bg-muted/30">
                                                                     <TableRow>
                                                                         <TableHead className="text-[10px] uppercase h-12 pl-4">PRODUTO</TableHead>
-                                                                        <TableHead className="text-[10px] uppercase h-12 text-center w-[80px]">TAM.</TableHead>
-                                                                        <TableHead className="text-[10px] uppercase h-12 text-center w-[80px]">COR</TableHead>
+                                                                        <TableHead className="text-[10px] uppercase h-12 text-center w-[150px]">REFERÊNCIA</TableHead>
                                                                         <TableHead className="text-[10px] uppercase h-12 text-center w-[80px]">QNTD.</TableHead>
                                                                         <TableHead className="text-[10px] uppercase h-12 text-right pr-6 w-[120px]">AÇÕES</TableHead>
                                                                     </TableRow>
@@ -203,10 +212,7 @@ export default async function ConsignmentPage() {
                                                                                     {c.product.name}
                                                                                 </TableCell>
                                                                                 <TableCell className="text-center py-4">
-                                                                                    <Badge variant="outline" className="text-[10px] px-1.5 h-5">{c.product.size || '-'}</Badge>
-                                                                                </TableCell>
-                                                                                <TableCell className="text-center py-4">
-                                                                                    <Badge variant="secondary" className="text-[10px] px-1.5 h-5 uppercase font-bold">{c.product.color || '-'}</Badge>
+                                                                                    <Badge variant="outline" className="text-[10px] px-1.5 h-5">{c.product.reference || '-'}</Badge>
                                                                                 </TableCell>
                                                                                 <TableCell className="text-center font-black py-4">
                                                                                     {c.quantity}
@@ -236,8 +242,11 @@ export default async function ConsignmentPage() {
                                                     {totalQty}
                                                 </Badge>
                                             </TableCell>
-                                            <TableCell className="text-right pr-6 font-bold text-green-600 dark:text-green-400">
+                                            <TableCell className="text-right font-bold text-green-600 dark:text-green-400">
                                                 {formatCurrency(totalVal)}
+                                            </TableCell>
+                                            <TableCell className="text-right pr-6">
+                                                <SellerReceiptDialog seller={seller} />
                                             </TableCell>
                                         </TableRow>
                                     );

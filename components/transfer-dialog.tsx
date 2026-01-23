@@ -94,7 +94,7 @@ export function TransferDialog({ products, sellers }: TransferDialogProps) {
                             <SelectContent>
                                 {products.map((p) => (
                                     <SelectItem key={p.id} value={p.id} className="uppercase">
-                                        {p.name} {p.size ? `(${p.size})` : ''} - {p.quantity} DISP.
+                                        {p.name} {p.reference ? `[${p.reference}]` : ''} - {p.quantity} DISP.
                                     </SelectItem>
                                 ))}
                             </SelectContent>

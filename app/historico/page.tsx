@@ -67,7 +67,7 @@ export default async function HistoryPage() {
                                                     {log.product.name}
                                                 </p>
                                                 <div className="text-[10px] opacity-70 pl-5">
-                                                    TAM: {log.product.size || '-'}
+                                                    REF: {log.product.reference || '-'}
                                                 </div>
                                             </div>
                                             <div className="text-right">
@@ -135,7 +135,7 @@ export default async function HistoryPage() {
                                             <TableCell className="font-black text-xs py-4">
                                                 <div className="flex flex-col">
                                                     <span>{log.product.name}</span>
-                                                    <span className="text-[9px] opacity-50 font-medium">TAM: {log.product.size || '-'}</span>
+                                                    <span className="text-[9px] opacity-50 font-medium">REF: {log.product.reference || '-'}</span>
                                                 </div>
                                             </TableCell>
                                             <TableCell className="text-center py-4">
