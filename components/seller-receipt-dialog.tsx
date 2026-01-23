@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { FileText, Printer, Calculator, History, ShoppingBag, RefreshCcw, Package, DollarSign, Percent } from 'lucide-react';
+import { FileText, Printer, Calculator, History, ShoppingBag, RefreshCcw, Package, DollarSign, Percent, Calendar } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -225,50 +225,65 @@ export function SellerReceiptDialog({ seller, trigger }: SellerReceiptDialogProp
                         <div className="space-y-4">
                             <h3 className="text-xs font-black flex items-center gap-2">
                                 <History className="h-4 w-4" />
-                                DETALHAMENTO DE MOVIMENTAÇÕES (VENDAS E DEVOLUÇÕES)
+                                DETALHAMENTO DE MOVIMENTAÇÕES (HISTÓRICO DIÁRIO)
                             </h3>
-                            <div className="border rounded-xl overflow-hidden">
-                                <Table>
-                                    <TableHeader className="bg-muted/50">
-                                        <TableRow>
-                                            <TableHead className="text-[9px] h-8 pl-4">DATA</TableHead>
-                                            <TableHead className="text-[9px] h-8 text-center">TIPO</TableHead>
-                                            <TableHead className="text-[9px] h-8">PRODUTO</TableHead>
-                                            <TableHead className="text-[9px] h-8 text-center">QTD</TableHead>
-                                            <TableHead className="text-[9px] h-8 text-right pr-4">VALOR UNIT.</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {logs.filter(l => l.type === 'SALE' || l.type === 'RETURN').map((log) => (
-                                            <TableRow key={log.id} className="text-[10px]">
-                                                <TableCell className="pl-4 py-2 font-mono whitespace-nowrap">
-                                                    {format(new Date(log.timestamp), "dd/MM HH:mm", { locale: ptBR })}
-                                                </TableCell>
-                                                <TableCell className="text-center py-2">
-                                                    <Badge variant={log.type === 'SALE' ? 'default' : 'outline'} className="text-[8px] h-4 px-1">
-                                                        {log.type === 'SALE' ? 'VENDA' : 'DEVOL.'}
-                                                    </Badge>
-                                                </TableCell>
-                                                <TableCell className="py-2">
-                                                    <div className="flex flex-col">
-                                                        <span>{log.product.name}</span>
-                                                        <span className="text-[8px] opacity-50 font-medium">REF: {log.product.reference || '-'}</span>
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell className="text-center py-2 font-black">
-                                                    {log.type === 'SALE' ? (
-                                                        <span className="text-green-600">+{log.quantity}</span>
-                                                    ) : (
-                                                        <span className="text-orange-600">-{log.quantity}</span>
-                                                    )}
-                                                </TableCell>
-                                                <TableCell className="text-right pr-4 py-2">
-                                                    {formatCurrency(log.product.price)}
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
+                            <div className="space-y-6">
+                                {Object.entries(
+                                    logs.filter(l => l.type === 'SALE' || l.type === 'RETURN').reduce((acc, log) => {
+                                        const dateKey = format(new Date(log.timestamp), 'dd/MM/yyyy');
+                                        if (!acc[dateKey]) acc[dateKey] = [];
+                                        acc[dateKey].push(log);
+                                        return acc;
+                                    }, {} as Record<string, MovementLog[]>)
+                                ).map(([date, dayLogs]) => (
+                                    <div key={date} className="space-y-2">
+                                        <div className="bg-muted/40 px-4 py-1.5 rounded-t-lg border-x border-t border-border/50">
+                                            <span className="text-[10px] font-black text-primary flex items-center gap-2">
+                                                <Calendar className="h-3 w-3" />
+                                                DIA {date}
+                                            </span>
+                                        </div>
+                                        <div className="border border-border/50 rounded-b-xl overflow-hidden">
+                                            <Table>
+                                                <TableHeader className="bg-muted/20">
+                                                    <TableRow>
+                                                        <TableHead className="text-[9px] h-8 text-center w-[80px]">TIPO</TableHead>
+                                                        <TableHead className="text-[9px] h-8">PRODUTO</TableHead>
+                                                        <TableHead className="text-[9px] h-8 text-center">QTD</TableHead>
+                                                        <TableHead className="text-[9px] h-8 text-right pr-4">VALOR UNIT.</TableHead>
+                                                    </TableRow>
+                                                </TableHeader>
+                                                <TableBody>
+                                                    {dayLogs.map((log) => (
+                                                        <TableRow key={log.id} className="text-[10px]">
+                                                            <TableCell className="text-center py-2">
+                                                                <Badge variant={log.type === 'SALE' ? 'default' : 'outline'} className="text-[8px] h-4 px-1">
+                                                                    {log.type === 'SALE' ? 'VENDA' : 'DEVOL.'}
+                                                                </Badge>
+                                                            </TableCell>
+                                                            <TableCell className="py-2">
+                                                                <div className="flex flex-col">
+                                                                    <span>{log.product.name}</span>
+                                                                    <span className="text-[8px] opacity-50 font-medium">REF: {log.product.reference || '-'}</span>
+                                                                </div>
+                                                            </TableCell>
+                                                            <TableCell className="text-center py-2 font-black">
+                                                                {log.type === 'SALE' ? (
+                                                                    <span className="text-green-600">+{log.quantity}</span>
+                                                                ) : (
+                                                                    <span className="text-orange-600">-{log.quantity}</span>
+                                                                )}
+                                                            </TableCell>
+                                                            <TableCell className="text-right pr-4 py-2">
+                                                                {formatCurrency(log.product.price)}
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    ))}
+                                                </TableBody>
+                                            </Table>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
 
