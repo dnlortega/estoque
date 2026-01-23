@@ -34,8 +34,7 @@ async function main() {
                     name: cat.name.toUpperCase(),
                     price: cat.price,
                     quantity: qty,
-                    size: size,
-                    color: color.toUpperCase(),
+                    reference: `${size}-${color.toUpperCase().substring(0, 3)}`,
                 }
             });
 
