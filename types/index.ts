@@ -15,7 +15,8 @@ export interface Product {
 export interface Seller {
     id: string;
     name: string;
-    cpf: string;
+    cpf?: string;
+    rg?: string;
     address: string;
     phone: string;
     createdAt: Date;

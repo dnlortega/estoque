@@ -24,10 +24,14 @@ import { createSeller } from '@/app/actions';
 import { formatCPF, formatPhone } from '@/lib/utils';
 
 const sellerSchema = z.object({
-    name: z.string().min(1, 'Nome é obrigatório'),
-    cpf: z.string().min(11, 'CPF inválido'),
-    address: z.string().min(1, 'Endereço é obrigatório'),
-    phone: z.string().min(10, 'Telefone inválido'),
+    name: z.string().min(1, 'NOME É OBRIGATÓRIO'),
+    cpf: z.string().optional(),
+    rg: z.string().optional(),
+    address: z.string().min(1, 'ENDEREÇO É OBRIGATÓRIO'),
+    phone: z.string().min(10, 'TELEFONE INVÁLIDO'),
+}).refine((data) => (data.cpf && data.cpf.length >= 14) || (data.rg && data.rg.length >= 5), {
+    message: "CPF OU RG DEVE SER PREENCHIDO",
+    path: ["cpf"], // Will highlight CPF field
 });
 
 type SellerFormValues = z.infer<typeof sellerSchema>;
@@ -40,6 +44,7 @@ export function CreateSellerDialog() {
         defaultValues: {
             name: '',
             cpf: '',
+            rg: '',
             address: '',
             phone: '',
         },
@@ -53,7 +58,7 @@ export function CreateSellerDialog() {
             form.reset();
             router.refresh();
         } catch (error) {
-            toast.error('ERRO AO CADASTRAR VENDEDOR. VERIFIQUE SE O CPF JÁ EXISTE.');
+            toast.error('ERRO AO CADASTRAR VENDEDOR.');
         }
     }
 
@@ -64,18 +69,20 @@ export function CreateSellerDialog() {
                     <UserPlus className="h-5 w-5" />
                 </Button>
             </DialogTrigger>
-            <DialogContent>
+            <DialogContent className="uppercase font-bold">
                 <DialogHeader>
-                    <DialogTitle>Cadastrar Novo Vendedor</DialogTitle>
+                    <DialogTitle>CADASTRAR NOVO VENDEDOR</DialogTitle>
                     <DialogDescription>
-                        Insira os dados pessoais do vendedor para gestão de consignação.
+                        INSIRA OS DADOS PESSOAIS DO VENDEDOR PARA GESTÃO DE CONSIGNAÇÃO.
                     </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
                     <div className="space-y-2">
                         <Label htmlFor="name">NOME COMPLETO</Label>
                         <Input id="name" {...form.register('name')} placeholder="EX: JOÃO SILVA" />
+                        {form.formState.errors.name && <p className="text-[10px] text-red-500">{form.formState.errors.name.message}</p>}
                     </div>
+
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="cpf">CPF</Label>
@@ -88,7 +95,19 @@ export function CreateSellerDialog() {
                                     form.setValue('cpf', formatted);
                                 }}
                             />
+                            {form.formState.errors.cpf && <p className="text-[10px] text-red-500">{form.formState.errors.cpf.message}</p>}
                         </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="rg">RG</Label>
+                            <Input
+                                id="rg"
+                                {...form.register('rg')}
+                                placeholder="00.000.000-0"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="phone">CELULAR</Label>
                             <Input
@@ -100,12 +119,15 @@ export function CreateSellerDialog() {
                                     form.setValue('phone', formatted);
                                 }}
                             />
+                            {form.formState.errors.phone && <p className="text-[10px] text-red-500">{form.formState.errors.phone.message}</p>}
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="address">ENDEREÇO</Label>
+                            <Input id="address" {...form.register('address')} placeholder="RUA, NÚMERO, BAIRRO..." />
+                            {form.formState.errors.address && <p className="text-[10px] text-red-500">{form.formState.errors.address.message}</p>}
                         </div>
                     </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="address">ENDEREÇO</Label>
-                        <Input id="address" {...form.register('address')} placeholder="RUA, NÚMERO, BAIRRO, CIDADE" />
-                    </div>
+
                     <DialogFooter className="flex justify-end gap-2">
                         <Button type="button" variant="outline" size="icon" onClick={() => setOpen(false)} title="CANCELAR">
                             <X className="h-5 w-5" />

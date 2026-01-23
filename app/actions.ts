@@ -88,7 +88,7 @@ export async function getSellers() {
     });
 }
 
-export async function createSeller(data: { name: string; cpf: string; address: string; phone: string }) {
+export async function createSeller(data: { name: string; cpf?: string; rg?: string; address: string; phone: string }) {
     const seller = await prisma.seller.create({
         data: {
             ...data,
@@ -100,7 +100,7 @@ export async function createSeller(data: { name: string; cpf: string; address: s
     return seller;
 }
 
-export async function updateSeller(id: string, data: { name: string; cpf: string; address: string; phone: string }) {
+export async function updateSeller(id: string, data: { name: string; cpf?: string; rg?: string; address: string; phone: string }) {
     const seller = await prisma.seller.update({
         where: { id },
         data: {

@@ -23,7 +23,8 @@ model Product {
 model Seller {
   id        String   @id @default(cuid())
   name      String
-  cpf       String   @unique
+  cpf       String?
+  rg        String?
   address   String
   phone     String
   createdAt DateTime @default(now())

@@ -45,9 +45,13 @@ import { Seller } from '@/types';
 
 const sellerSchema = z.object({
     name: z.string().min(1, 'NOME É OBRIGATÓRIO'),
-    cpf: z.string().min(11, 'CPF INVÁLIDO'),
+    cpf: z.string().optional(),
+    rg: z.string().optional(),
     address: z.string().min(1, 'ENDEREÇO É OBRIGATÓRIO'),
     phone: z.string().min(10, 'TELEFONE INVÁLIDO'),
+}).refine((data) => (data.cpf && data.cpf.length >= 14) || (data.rg && data.rg.length >= 5), {
+    message: "CPF OU RG DEVE SER PREENCHIDO",
+    path: ["cpf"],
 });
 
 type SellerFormValues = z.infer<typeof sellerSchema>;
@@ -66,7 +70,8 @@ export function SellerActions({ seller }: SellerActionsProps) {
         resolver: zodResolver(sellerSchema),
         defaultValues: {
             name: seller.name,
-            cpf: seller.cpf,
+            cpf: seller.cpf || '',
+            rg: seller.rg || '',
             address: seller.address,
             phone: seller.phone,
         },
@@ -137,7 +142,7 @@ export function SellerActions({ seller }: SellerActionsProps) {
 
             {/* DIÁLOGO DE EDIÇÃO */}
             <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-                <DialogContent>
+                <DialogContent className="uppercase font-bold">
                     <DialogHeader>
                         <DialogTitle>EDITAR VENDEDOR</DialogTitle>
                         <DialogDescription>
@@ -148,6 +153,7 @@ export function SellerActions({ seller }: SellerActionsProps) {
                         <div className="space-y-2">
                             <Label htmlFor="edit-name">NOME COMPLETO</Label>
                             <Input id="edit-name" {...form.register('name')} />
+                            {form.formState.errors.name && <p className="text-[10px] text-red-500">{form.formState.errors.name.message}</p>}
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
@@ -160,7 +166,17 @@ export function SellerActions({ seller }: SellerActionsProps) {
                                         form.setValue('cpf', formatted);
                                     }}
                                 />
+                                {form.formState.errors.cpf && <p className="text-[10px] text-red-500">{form.formState.errors.cpf.message}</p>}
                             </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="edit-rg">RG</Label>
+                                <Input
+                                    id="edit-rg"
+                                    {...form.register('rg')}
+                                />
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="edit-phone">CELULAR</Label>
                                 <Input
@@ -171,11 +187,13 @@ export function SellerActions({ seller }: SellerActionsProps) {
                                         form.setValue('phone', formatted);
                                     }}
                                 />
+                                {form.formState.errors.phone && <p className="text-[10px] text-red-500">{form.formState.errors.phone.message}</p>}
                             </div>
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="edit-address">ENDEREÇO</Label>
-                            <Input id="edit-address" {...form.register('address')} />
+                            <div className="space-y-2">
+                                <Label htmlFor="edit-address">ENDEREÇO</Label>
+                                <Input id="edit-address" {...form.register('address')} />
+                                {form.formState.errors.address && <p className="text-[10px] text-red-500">{form.formState.errors.address.message}</p>}
+                            </div>
                         </div>
                         <DialogFooter className="flex justify-end gap-2">
                             <Button type="button" variant="outline" size="icon" onClick={() => setIsEditDialogOpen(false)} title="CANCELAR">
