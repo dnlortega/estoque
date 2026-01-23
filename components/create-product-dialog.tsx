@@ -40,7 +40,7 @@ type ProductFormValues = {
     name: string;
     price: string;
     quantity: string;
-    reference: string;
+    reference?: string;
 };
 
 export function CreateProductDialog() {
