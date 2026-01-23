@@ -19,8 +19,12 @@ import {
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/animations';
 
 export default async function ConsignmentPage() {
-    const sellers: Seller[] = await getSellers() as any;
-    const products: Product[] = await getProducts() as any;
+    // Clean data for serialization
+    const sellersRaw = await getSellers();
+    const sellers: Seller[] = JSON.parse(JSON.stringify(sellersRaw));
+
+    const productsRaw = await getProducts();
+    const products: Product[] = JSON.parse(JSON.stringify(productsRaw));
 
     return (
         <FadeIn className="space-y-6">
@@ -38,8 +42,8 @@ export default async function ConsignmentPage() {
                     {/* MOBILE VIEW (CARDS) */}
                     <StaggerContainer className="grid grid-cols-1 gap-4 md:hidden p-4">
                         {sellers.map((seller: Seller) => {
-                            const totalQty = Math.max(0, seller.consignments.reduce((acc: number, c) => acc + c.quantity, 0));
-                            const totalVal = Math.max(0, seller.consignments.reduce((acc: number, c) => acc + (c.quantity * c.product.price), 0));
+                            const totalQty = Math.max(0, (seller.consignments || []).reduce((acc: number, c) => acc + (c.quantity || 0), 0));
+                            const totalVal = Math.max(0, (seller.consignments || []).reduce((acc: number, c) => acc + ((c.quantity || 0) * (c.product?.price || 0)), 0));
 
                             return (
                                 <StaggerItem key={seller.id}>
@@ -106,7 +110,7 @@ export default async function ConsignmentPage() {
                                                     <TableBody>
                                                         {seller.consignments.length === 0 ? (
                                                             <TableRow>
-                                                                <TableCell colSpan={3} className="text-center py-10 text-muted-foreground text-xs italic uppercase">
+                                                                <TableCell colSpan={4} className="text-center py-10 text-muted-foreground text-xs italic uppercase">
                                                                     NENHUM ITEM EM CONSIGNAÇÃO
                                                                 </TableCell>
                                                             </TableRow>
@@ -115,11 +119,11 @@ export default async function ConsignmentPage() {
                                                                 <TableRow key={c.id} className="hover:bg-muted/20">
                                                                     <TableCell className="py-3 pl-4">
                                                                         <div className="flex flex-col">
-                                                                            <span className="text-xs font-bold uppercase">{c.product.name}</span>
+                                                                            <span className="text-xs font-bold uppercase">{c.product?.name || 'PRODUTO NÃO ENCONTRADO'}</span>
                                                                         </div>
                                                                     </TableCell>
                                                                     <TableCell className="text-center py-3">
-                                                                        <Badge variant="outline" className="h-4 px-1 text-[9px]">{c.product.reference || '-'}</Badge>
+                                                                        <Badge variant="outline" className="h-4 px-1 text-[9px]">{c.product?.reference || '-'}</Badge>
                                                                     </TableCell>
                                                                     <TableCell className="text-center font-black py-3 text-sm">
                                                                         {c.quantity}
@@ -128,7 +132,7 @@ export default async function ConsignmentPage() {
                                                                         <ConsignmentActions
                                                                             productId={c.productId}
                                                                             sellerId={c.sellerId}
-                                                                            productName={c.product.name}
+                                                                            productName={c.product?.name || 'PRODUTO'}
                                                                             currentQuantity={c.quantity}
                                                                         />
                                                                     </TableCell>
@@ -165,8 +169,8 @@ export default async function ConsignmentPage() {
                             </TableHeader>
                             <TableBody>
                                 {sellers.map((seller: Seller) => {
-                                    const totalQty = Math.max(0, seller.consignments.reduce((acc: number, c) => acc + c.quantity, 0));
-                                    const totalVal = Math.max(0, seller.consignments.reduce((acc: number, c) => acc + (c.quantity * c.product.price), 0));
+                                    const totalQty = Math.max(0, (seller.consignments || []).reduce((acc: number, c) => acc + (c.quantity || 0), 0));
+                                    const totalVal = Math.max(0, (seller.consignments || []).reduce((acc: number, c) => acc + ((c.quantity || 0) * (c.product?.price || 0)), 0));
 
                                     return (
                                         <TableRow key={seller.id} className="group hover:bg-muted/30">
@@ -201,18 +205,18 @@ export default async function ConsignmentPage() {
                                                                 <TableBody>
                                                                     {seller.consignments.length === 0 ? (
                                                                         <TableRow>
-                                                                            <TableCell colSpan={5} className="text-center py-10 text-muted-foreground text-xs italic uppercase">
-                                                                                NENHUM ITEM EM CONSIGNÇÃO
+                                                                            <TableCell colSpan={4} className="text-center py-10 text-muted-foreground text-xs italic uppercase">
+                                                                                NENHUM ITEM EM CONSIGNAÇÃO
                                                                             </TableCell>
                                                                         </TableRow>
                                                                     ) : (
                                                                         seller.consignments.map((c: any) => (
                                                                             <TableRow key={c.id} className="hover:bg-muted/20">
                                                                                 <TableCell className="text-xs font-bold py-4 pl-4 uppercase">
-                                                                                    {c.product.name}
+                                                                                    {c.product?.name || 'PRODUTO NÃO ENCONTRADO'}
                                                                                 </TableCell>
                                                                                 <TableCell className="text-center py-4">
-                                                                                    <Badge variant="outline" className="text-[10px] px-1.5 h-5">{c.product.reference || '-'}</Badge>
+                                                                                    <Badge variant="outline" className="text-[10px] px-1.5 h-5">{c.product?.reference || '-'}</Badge>
                                                                                 </TableCell>
                                                                                 <TableCell className="text-center font-black py-4">
                                                                                     {c.quantity}
@@ -221,7 +225,7 @@ export default async function ConsignmentPage() {
                                                                                     <ConsignmentActions
                                                                                         productId={c.productId}
                                                                                         sellerId={c.sellerId}
-                                                                                        productName={c.product.name}
+                                                                                        productName={c.product?.name || 'PRODUTO'}
                                                                                         currentQuantity={c.quantity}
                                                                                     />
                                                                                 </TableCell>

@@ -272,7 +272,8 @@ export async function getDashboardStats() {
 
     const totalSalesValue = Math.max(0, sales.reduce((acc: number, sale: any) => {
         const price = sale.product?.price || 0;
-        return acc + (sale.quantity || 0) * price;
+        const qty = sale.quantity || 0;
+        return acc + (qty * price);
     }, 0));
 
     const consignments = await prisma.consignment.findMany({
@@ -282,7 +283,8 @@ export async function getDashboardStats() {
     const totalInConsignment = Math.max(0, consignments.reduce((acc: number, c: any) => acc + (c.quantity || 0), 0));
     const totalInConsignmentValue = Math.max(0, consignments.reduce((acc: number, c: any) => {
         const price = c.product?.price || 0;
-        return acc + (c.quantity || 0) * price;
+        const qty = c.quantity || 0;
+        return acc + (qty * price);
     }, 0));
 
     const centralStockValue = Math.max(0, products.reduce((acc: number, p: any) => acc + (p.quantity || 0) * (p.price || 0), 0));
@@ -326,12 +328,12 @@ export async function getSellerReceiptData(sellerId: string) {
     const returned = logs.filter(l => l.type === 'RETURN');
     const sold = logs.filter(l => l.type === 'SALE');
 
-    const qtyDelivered = delivered.reduce((acc, l) => acc + l.quantity, 0);
-    const qtyReturned = returned.reduce((acc, l) => acc + l.quantity, 0);
-    const qtySold = sold.reduce((acc, l) => acc + l.quantity, 0);
+    const qtyDelivered = delivered.reduce((acc, l) => acc + (l.quantity || 0), 0);
+    const qtyReturned = returned.reduce((acc, l) => acc + (l.quantity || 0), 0);
+    const qtySold = sold.reduce((acc, l) => acc + (l.quantity || 0), 0);
 
-    const valDelivered = delivered.reduce((acc, l) => acc + (l.quantity || 0) * (l.product?.price || 0), 0);
-    const valSold = sold.reduce((acc, l) => acc + (l.quantity || 0) * (l.product?.price || 0), 0);
+    const valDelivered = delivered.reduce((acc, l) => acc + ((l.quantity || 0) * (l.product?.price || 0)), 0);
+    const valSold = sold.reduce((acc, l) => acc + ((l.quantity || 0) * (l.product?.price || 0)), 0);
 
     const currentConsignments = await prisma.consignment.findMany({
         where: { sellerId },

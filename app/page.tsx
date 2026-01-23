@@ -17,8 +17,11 @@ import {
 import { FadeIn, StaggerContainer, StaggerItem, ScaleHover } from '@/components/animations';
 
 export default async function DashboardPage() {
-  const products: Product[] = await getProducts() as any;
-  const stats = await getDashboardStats();
+  const productsRaw = await getProducts();
+  const products: Product[] = JSON.parse(JSON.stringify(productsRaw));
+
+  const statsRaw = await getDashboardStats();
+  const stats = JSON.parse(JSON.stringify(statsRaw));
 
   const lowStockProducts = products.filter((p: Product) => p.quantity < 5);
   const lowStockCount = lowStockProducts.length;
