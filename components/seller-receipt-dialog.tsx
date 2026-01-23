@@ -81,21 +81,83 @@ export function SellerReceiptDialog({ seller, trigger }: SellerReceiptDialogProp
             <DialogContent className="max-w-4xl w-[95vw] max-h-[90vh] overflow-y-auto scrollbar-hide">
                 <style jsx global>{`
                     @media print {
-                        body * {
-                            visibility: hidden;
+                        @page {
+                            margin: 10mm;
+                            size: auto;
                         }
-                        .print-area, .print-area * {
-                            visibility: visible;
-                        }
-                        .print-area {
-                            position: absolute;
-                            left: 0;
-                            top: 0;
-                            width: 100%;
+                        body {
+                            background: white !important;
+                            color: black !important;
+                            margin: 0 !important;
+                            padding: 0 !important;
                         }
                         .no-print {
                             display: none !important;
                         }
+                        /* Reset containers for print */
+                        body * {
+                            visibility: hidden;
+                        }
+                        /* Force print area to be the main content */
+                        .print-area, .print-area * {
+                            visibility: visible !important;
+                        }
+                        .print-area {
+                            position: relative !important;
+                            visibility: visible !important;
+                            display: block !important;
+                            width: 100% !important;
+                            margin: 0 !important;
+                            padding: 0 !important;
+                            border: none !important;
+                            background: white !important;
+                            color: black !important;
+                            box-shadow: none !important;
+                        }
+                        /* Deep parent fix for Radix Dialog/Portals */
+                        div[data-slot="dialog-overlay"] {
+                            display: none !important;
+                        }
+                        div[data-slot="dialog-content"],
+                        div[data-slot="dialog-portal"],
+                        div[role="dialog"] {
+                            position: static !important;
+                            display: block !important;
+                            visibility: visible !important;
+                            overflow: visible !important;
+                            max-height: none !important;
+                            max-width: none !important;
+                            width: 100% !important;
+                            padding: 0 !important;
+                            margin: 0 !important;
+                            border: none !important;
+                            box-shadow: none !important;
+                            background: transparent !important;
+                            transform: none !important;
+                        }
+
+                        /* Prevent clipping on parents */
+                        div, section, main, article {
+                            overflow: visible !important;
+                        }
+
+                        /* Table and Card print polish */
+                        .print-area table {
+                            width: 100% !important;
+                            border-collapse: collapse !important;
+                        }
+                        .print-area .bg-primary\/5, 
+                        .print-area .bg-muted\/30,
+                        .print-area .bg-muted\/20 {
+                            background-color: #f9fafb !important; /* Very light gray for print */
+                            print-color-adjust: exact;
+                        }
+                        
+                        /* Table page break fixes */
+                        table { page-break-inside: auto; }
+                        tr { page-break-inside: avoid; page-break-after: auto; }
+                        thead { display: table-header-group; }
+                        tfoot { display: table-footer-group; }
                     }
                 `}</style>
 
