@@ -41,6 +41,8 @@ export interface MovementLog {
     productId: string;
     sellerId?: string;
     timestamp: Date;
+    latitude?: number;
+    longitude?: number;
     product: Product;
     seller?: Seller;
 }
