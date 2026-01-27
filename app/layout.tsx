@@ -50,6 +50,7 @@ export const viewport: Viewport = {
 };
 
 import { OfflineSyncProvider } from "@/components/offline-sync-provider";
+import { PWAHandler } from "@/components/pwa-handler";
 
 import Link from "next/link";
 import { Info } from "lucide-react";
@@ -70,6 +71,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <PWAHandler />
           <OfflineSyncProvider>
             <div className="flex h-screen w-full bg-background text-foreground transition-colors duration-300 overflow-hidden">
               <div className="flex flex-col flex-1 min-w-0 pb-20 h-full">

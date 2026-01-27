@@ -6,6 +6,10 @@ const withPWA = require("next-pwa")({
   disable: process.env.NODE_ENV === "development",
   register: true,
   skipWaiting: true,
+  reloadOnOnline: true,
+  fallbacks: {
+    document: "/~offline", // Se você quiser uma página offline customizada
+  },
 });
 
 const nextConfig: NextConfig = {
