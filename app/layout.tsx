@@ -4,11 +4,12 @@ import { BottomNav } from "@/components/bottom-nav";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Inter } from "next/font/google";
+import { Montserrat } from "next/font/google";
 
-const inter = Inter({
+const montserrat = Montserrat({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-montserrat",
+  weight: ["400", "500", "600", "700", "800", "900"],
   display: "swap",
 });
 
@@ -61,7 +62,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <body
-        className={`${inter.variable} font-sans antialiased selection:bg-primary/10`}
+        className={`${montserrat.variable} font-sans antialiased selection:bg-primary/10 text-[15px]`}
       >
         <ThemeProvider
           attribute="class"
@@ -72,12 +73,12 @@ export default function RootLayout({
           <OfflineSyncProvider>
             <div className="flex h-screen w-full bg-background text-foreground transition-colors duration-300 overflow-hidden">
               <div className="flex flex-col flex-1 min-w-0 pb-20 h-full">
-                <header className="flex h-16 shrink-0 items-center justify-between px-4 md:px-8 border-b transition-colors bg-card/50 backdrop-blur-sm sticky top-0 z-10 uppercase font-black tracking-widest text-[10px]">
+                <header className="flex h-16 shrink-0 items-center justify-between px-4 md:px-8 border-b transition-colors bg-card/50 backdrop-blur-sm sticky top-0 z-10 font-bold tracking-tight text-sm">
                   <div className="flex items-center gap-4">
-                    <Link href="/" className="text-xs font-black text-primary hover:opacity-80 transition-opacity">ESTOQUE+</Link>
+                    <Link href="/" className="text-lg font-black text-primary hover:opacity-80 transition-opacity tracking-tighter">ESTOQUE+</Link>
                   </div>
-                  <div className="flex items-center gap-4 text-xs font-black">
-                    <span className="hidden sm:block opacity-50">GERENCIAMENTO PROFISSIONAL</span>
+                  <div className="flex items-center gap-4 text-xs font-semibold uppercase tracking-wider">
+                    <span className="hidden sm:block opacity-50 italic">SISTEMA INTEGRADO</span>
                     <div className="flex items-center gap-2 border-l pl-4">
                       <Link href="/sobre" title="SOBRE O SISTEMA" className="hover:text-primary transition-colors">
                         <Info className="h-5 w-5" />
