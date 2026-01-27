@@ -9,7 +9,7 @@ export async function getProducts() {
     });
 }
 
-export async function createProduct(data: { name: string; price: number; quantity: number; reference?: string }) {
+export async function createProduct(data: { name: string; price: number; quantity: number; reference?: string }, gps?: { lat: number; lng: number }) {
     const product = await prisma.product.create({
         data: {
             ...data,
@@ -23,6 +23,8 @@ export async function createProduct(data: { name: string; price: number; quantit
             type: 'ENTRY',
             quantity: data.quantity,
             productId: product.id,
+            latitude: gps?.lat,
+            longitude: gps?.lng,
         },
     });
 
@@ -30,7 +32,7 @@ export async function createProduct(data: { name: string; price: number; quantit
     return product;
 }
 
-export async function adjustStock(productId: string, delta: number) {
+export async function adjustStock(productId: string, delta: number, gps?: { lat: number; lng: number }) {
     const product = await prisma.product.update({
         where: { id: productId },
         data: { quantity: { increment: delta } },
@@ -41,6 +43,8 @@ export async function adjustStock(productId: string, delta: number) {
             type: 'ENTRY',
             quantity: delta,
             productId: productId,
+            latitude: gps?.lat,
+            longitude: gps?.lng,
         },
     });
 
@@ -125,7 +129,7 @@ export async function deleteSeller(id: string) {
     revalidatePath('/historico');
 }
 
-export async function transferToSeller(productId: string, sellerId: string, quantity: number) {
+export async function transferToSeller(productId: string, sellerId: string, quantity: number, gps?: { lat: number; lng: number }) {
     // 1. Subtrair do estoque central
     await prisma.product.update({
         where: { id: productId },
@@ -155,6 +159,8 @@ export async function transferToSeller(productId: string, sellerId: string, quan
             quantity,
             productId,
             sellerId,
+            latitude: gps?.lat,
+            longitude: gps?.lng,
         },
     });
 
@@ -162,7 +168,7 @@ export async function transferToSeller(productId: string, sellerId: string, quan
     revalidatePath('/consignacao');
 }
 
-export async function returnFromSeller(productId: string, sellerId: string, quantity: number) {
+export async function returnFromSeller(productId: string, sellerId: string, quantity: number, gps?: { lat: number; lng: number }) {
     // 1. Verificar se o vendedor tem a quantidade necessária
     const consignment = await prisma.consignment.findUnique({
         where: { sellerId_productId: { sellerId, productId } }
@@ -196,6 +202,8 @@ export async function returnFromSeller(productId: string, sellerId: string, quan
             quantity,
             productId,
             sellerId,
+            latitude: gps?.lat,
+            longitude: gps?.lng,
         },
     });
 
@@ -210,7 +218,7 @@ export async function returnFromSeller(productId: string, sellerId: string, quan
     revalidatePath('/consignacao');
 }
 
-export async function sellFromSeller(productId: string, sellerId: string, quantity: number) {
+export async function sellFromSeller(productId: string, sellerId: string, quantity: number, gps?: { lat: number; lng: number }) {
     // 1. Verificar se o vendedor tem a quantidade necessária
     const consignment = await prisma.consignment.findUnique({
         where: { sellerId_productId: { sellerId, productId } }
@@ -238,6 +246,8 @@ export async function sellFromSeller(productId: string, sellerId: string, quanti
             quantity,
             productId,
             sellerId,
+            latitude: gps?.lat,
+            longitude: gps?.lng,
         },
     });
 

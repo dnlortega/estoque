@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { transferToSeller } from '@/app/actions';
+import { queueAction } from '@/lib/offline-actions';
 import { Product, Seller } from '@/types';
 
 interface TransferDialogProps {
@@ -54,11 +54,13 @@ export function TransferDialog({ products, sellers }: TransferDialogProps) {
         }
 
         try {
-            await transferToSeller(selectedProduct, selectedSeller, qty);
-            toast.success('TRANSFERÊNCIA REALIZADA COM SUCESSO!');
+            const res = await queueAction('transferToSeller', [selectedProduct, selectedSeller, qty]);
+            if (res.success) {
+                toast.success('TRANSFERÊNCIA REALIZADA COM SUCESSO!');
+                router.refresh();
+            }
             setOpen(false);
             reset();
-            router.refresh();
         } catch (error) {
             toast.error('ERRO AO REALIZAR TRANSFERÊNCIA.');
         }

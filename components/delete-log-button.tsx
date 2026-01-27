@@ -15,7 +15,7 @@ import {
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { deleteLog } from '@/app/actions';
+import { queueAction } from '@/lib/offline-actions';
 
 interface DeleteLogButtonProps {
     logId: string;
@@ -27,8 +27,10 @@ export function DeleteLogButton({ logId }: DeleteLogButtonProps) {
     async function handleDelete() {
         setIsDeleting(true);
         try {
-            await deleteLog(logId);
-            toast.success('MOVIMENTAÇÃO EXCLUÍDA COM SUCESSO!');
+            const res = await queueAction('deleteLog', [logId]);
+            if (res.success) {
+                toast.success('MOVIMENTAÇÃO EXCLUÍDA COM SUCESSO!');
+            }
         } catch (error) {
             toast.error('ERRO AO EXCLUIR MOVIMENTAÇÃO.');
         } finally {

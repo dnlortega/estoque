@@ -39,7 +39,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { updateSeller, deleteSeller } from '@/app/actions';
+import { queueAction } from '@/lib/offline-actions';
 import { formatCPF, formatPhone } from '@/lib/utils';
 import { Seller } from '@/types';
 
@@ -80,10 +80,12 @@ export function SellerActions({ seller }: SellerActionsProps) {
     async function onEditSubmit(data: SellerFormValues) {
         try {
             setIsSubmitting(true);
-            await updateSeller(seller.id, data);
-            toast.success('VENDEDOR ATUALIZADO COM SUCESSO!');
+            const res = await queueAction('updateSeller', [seller.id, data]);
+            if (res.success) {
+                toast.success('VENDEDOR ATUALIZADO COM SUCESSO!');
+                router.refresh();
+            }
             setIsEditDialogOpen(false);
-            router.refresh();
         } catch (error) {
             toast.error('ERRO AO ATUALIZAR VENDEDOR.');
         } finally {
@@ -94,10 +96,12 @@ export function SellerActions({ seller }: SellerActionsProps) {
     async function onDeleteConfirm() {
         try {
             setIsSubmitting(true);
-            await deleteSeller(seller.id);
-            toast.success('VENDEDOR EXCLUÍDO COM SUCESSO!');
+            const res = await queueAction('deleteSeller', [seller.id]);
+            if (res.success) {
+                toast.success('VENDEDOR EXCLUÍDO COM SUCESSO!');
+                router.refresh();
+            }
             setIsDeleteDialogOpen(false);
-            router.refresh();
         } catch (error) {
             toast.error('ERRO AO EXCLUIR VENDEDOR.');
         } finally {

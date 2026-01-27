@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { adjustStock } from '@/app/actions';
+import { queueAction } from '@/lib/offline-actions';
 import { Product } from '@/types';
 
 export function StockAdjustmentDialog({ product }: { product: Product }) {
@@ -35,11 +35,13 @@ export function StockAdjustmentDialog({ product }: { product: Product }) {
         const delta = type === 'ADD' ? value : -value;
 
         try {
-            await adjustStock(product.id, delta);
-            toast.success(`Estoque atualizado: ${type === 'ADD' ? 'Entrada' : 'Saída'} de ${value} unidade(s).`);
+            const res = await queueAction('adjustStock', [product.id, delta]);
+            if (res.success) {
+                toast.success(`Estoque atualizado: ${type === 'ADD' ? 'Entrada' : 'Saída'} de ${value} unidade(s).`);
+                router.refresh();
+            }
             setOpen(false);
             setAmount('0');
-            router.refresh();
         } catch (error) {
             toast.error('Erro ao atualizar estoque.');
         }

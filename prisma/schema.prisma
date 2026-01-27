@@ -60,6 +60,8 @@ model MovementLog {
   productId  String
   sellerId   String?
   timestamp  DateTime     @default(now())
+  latitude   Float?
+  longitude  Float?
 
   product    Product      @relation(fields: [productId], references: [id])
   seller     Seller?      @relation(fields: [sellerId], references: [id])

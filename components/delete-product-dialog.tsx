@@ -20,7 +20,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { getProductWithMovements, deleteProductAndMovements } from '@/app/actions';
+import { getProductWithMovements } from '@/app/actions';
+import { queueAction } from '@/lib/offline-actions';
 
 interface DeleteProductDialogProps {
     productId: string;
@@ -49,9 +50,11 @@ export function DeleteProductDialog({ productId, productName }: DeleteProductDia
     async function onDelete() {
         try {
             setIsDeleting(true);
-            await deleteProductAndMovements(productId);
-            toast.success('Produto e todo seu histórico excluídos com sucesso!');
-            router.refresh();
+            const res = await queueAction('deleteProductAndMovements', [productId]);
+            if (res.success) {
+                toast.success('Produto e todo seu histórico excluídos com sucesso!');
+                router.refresh();
+            }
         } catch (error) {
             toast.error('Erro ao excluir produto.');
             console.error(error);

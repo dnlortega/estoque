@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { createSeller } from '@/app/actions';
+import { queueAction } from '@/lib/offline-actions';
 import { formatCPF, formatPhone } from '@/lib/utils';
 
 const sellerSchema = z.object({
@@ -52,11 +52,13 @@ export function CreateSellerDialog() {
 
     async function onSubmit(data: SellerFormValues) {
         try {
-            await createSeller(data);
-            toast.success('VENDEDOR CADASTRADO COM SUCESSO!');
+            const res = await queueAction('createSeller', [data]);
+            if (res.success) {
+                toast.success('VENDEDOR CADASTRADO COM SUCESSO!');
+                router.refresh();
+            }
             setOpen(false);
             form.reset();
-            router.refresh();
         } catch (error) {
             toast.error('ERRO AO CADASTRAR VENDEDOR.');
         }

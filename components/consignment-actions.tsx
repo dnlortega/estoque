@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { returnFromSeller, sellFromSeller } from '@/app/actions';
+import { queueAction } from '@/lib/offline-actions';
 
 interface ConsignmentActionsProps {
     productId: string;
@@ -46,16 +46,21 @@ export function ConsignmentActions({
 
         try {
             if (mode === 'RETURN') {
-                await returnFromSeller(productId, sellerId, qty);
-                toast.success(`${qty} UNIDADE(S) DE ${productName} RETORNADAS AO ESTOQUE.`);
+                const res = await queueAction('returnFromSeller', [productId, sellerId, qty]);
+                if (res.success) {
+                    toast.success(`${qty} UNIDADE(S) DE ${productName} RETORNADAS AO ESTOQUE.`);
+                    router.refresh();
+                }
             } else if (mode === 'SALE') {
-                await sellFromSeller(productId, sellerId, qty);
-                toast.success(`VENDA DE ${qty} UNIDADE(S) DE ${productName} REGISTRADA!`);
+                const res = await queueAction('sellFromSeller', [productId, sellerId, qty]);
+                if (res.success) {
+                    toast.success(`VENDA DE ${qty} UNIDADE(S) DE ${productName} REGISTRADA!`);
+                    router.refresh();
+                }
             }
             setOpen(false);
             setMode(null);
             setAmount('1');
-            router.refresh();
         } catch (error) {
             toast.error('ERRO AO PROCESSAR AÇÃO.');
         }

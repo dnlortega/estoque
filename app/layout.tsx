@@ -44,6 +44,11 @@ export const viewport: Viewport = {
   ],
 };
 
+import { OfflineSyncProvider } from "@/components/offline-sync-provider";
+
+import Link from "next/link";
+import { Info } from "lucide-react";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -60,25 +65,32 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="flex h-screen w-full bg-background text-foreground transition-colors duration-300 overflow-hidden">
-            <div className="flex flex-col flex-1 min-w-0 pb-20 h-full">
-              <header className="flex h-16 shrink-0 items-center justify-between px-4 md:px-8 border-b transition-colors bg-card/50 backdrop-blur-sm sticky top-0 z-10 uppercase font-black tracking-widest text-[10px]">
-                <div className="flex items-center gap-4">
-                  <span className="text-xs font-black text-primary">ESTOQUE+</span>
-                </div>
-                <div className="flex items-center gap-4 text-xs font-black">
-                  <span className="hidden sm:block opacity-50">GERENCIAMENTO PROFISSIONAL</span>
-                  <ThemeToggle />
-                </div>
-              </header>
-              <main className="flex-1 overflow-auto p-4 md:p-8">
-                {children}
-              </main>
-            </div>
+          <OfflineSyncProvider>
+            <div className="flex h-screen w-full bg-background text-foreground transition-colors duration-300 overflow-hidden">
+              <div className="flex flex-col flex-1 min-w-0 pb-20 h-full">
+                <header className="flex h-16 shrink-0 items-center justify-between px-4 md:px-8 border-b transition-colors bg-card/50 backdrop-blur-sm sticky top-0 z-10 uppercase font-black tracking-widest text-[10px]">
+                  <div className="flex items-center gap-4">
+                    <Link href="/" className="text-xs font-black text-primary hover:opacity-80 transition-opacity">ESTOQUE+</Link>
+                  </div>
+                  <div className="flex items-center gap-4 text-xs font-black">
+                    <span className="hidden sm:block opacity-50">GERENCIAMENTO PROFISSIONAL</span>
+                    <div className="flex items-center gap-2 border-l pl-4">
+                      <Link href="/sobre" title="SOBRE O SISTEMA" className="hover:text-primary transition-colors">
+                        <Info className="h-5 w-5" />
+                      </Link>
+                      <ThemeToggle />
+                    </div>
+                  </div>
+                </header>
+                <main className="flex-1 overflow-auto p-4 md:p-8">
+                  {children}
+                </main>
+              </div>
 
-            <BottomNav />
-          </div>
-          <Toaster position="top-right" />
+              <BottomNav />
+            </div>
+            <Toaster position="top-right" />
+          </OfflineSyncProvider>
         </ThemeProvider>
       </body>
     </html>

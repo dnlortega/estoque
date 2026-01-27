@@ -27,7 +27,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { createProduct } from '@/app/actions';
+import { queueAction } from '@/lib/offline-actions';
 
 const productSchema = z.object({
     name: z.string().min(1, 'NOME É OBRIGATÓRIO'),
@@ -58,16 +58,20 @@ export function CreateProductDialog() {
 
     async function onSubmit(data: ProductFormValues) {
         try {
-            await createProduct({
+            const res = await queueAction('createProduct', [{
                 name: data.name,
                 price: parseFloat(data.price),
                 quantity: parseInt(data.quantity),
                 reference: data.reference,
-            });
-            toast.success('PRODUTO CRIADO COM SUCESSO!');
+            }]);
+
+            if (res.success) {
+                toast.success('PRODUTO CRIADO COM SUCESSO!');
+                router.refresh();
+            }
+
             setOpen(false);
             form.reset();
-            router.refresh();
         } catch (error) {
             toast.error('ERRO AO CRIAR PRODUTO.');
         }
