@@ -22,9 +22,11 @@ export function formatPhone(value: string) {
     .replace(/(-\d{4})\d+?$/, "$1");
 }
 
+const currencyFormatter = new Intl.NumberFormat("pt-BR", {
+  style: "currency",
+  currency: "BRL",
+});
+
 export function formatCurrency(value: number) {
-  return new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  }).format(value);
+  return currencyFormatter.format(value);
 }

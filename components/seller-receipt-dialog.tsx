@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { FileText, Printer, Calculator, History, ShoppingBag, RefreshCcw, Package, DollarSign, Percent, Calendar } from 'lucide-react';
 import { formatCurrency } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -58,13 +58,24 @@ export function SellerReceiptDialog({ seller, trigger }: SellerReceiptDialogProp
         }
     }
 
+    const { commissionVal, amountToPay, balance, salesPerformance } = useMemo(() => {
+        const valSoldCalc = stats?.valSold || 0;
+        const cVal = valSoldCalc * (commission / 100);
+        const toPay = valSoldCalc - cVal;
+        const bal = toPay - paidAmount;
+        const perf = stats?.qtyDelivered > 0
+            ? (stats.qtySold / (stats.qtyDelivered - stats.qtyReturned)) * 100
+            : 0;
+
+        return {
+            commissionVal: cVal,
+            amountToPay: toPay,
+            balance: bal,
+            salesPerformance: perf
+        };
+    }, [stats, commission, paidAmount]);
+
     const valSold = stats?.valSold || 0;
-    const commissionVal = valSold * (commission / 100);
-    const amountToPay = valSold - commissionVal;
-    const balance = amountToPay - paidAmount;
-    const salesPerformance = stats?.qtyDelivered > 0
-        ? (stats.qtySold / (stats.qtyDelivered - stats.qtyReturned)) * 100
-        : 0;
 
     const handlePrint = () => {
         const printWindow = window.open('', '_blank');

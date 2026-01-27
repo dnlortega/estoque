@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { ArrowUpRight, ArrowDownRight, RefreshCcw, ShoppingBag, History, Calendar, User, Package } from 'lucide-react';
+import { ArrowUpRight, ArrowDownRight, RefreshCcw, ShoppingBag, History, Calendar, User, Package, MapPin } from 'lucide-react';
 import { MovementLog } from '@/types';
 import { DeleteLogButton } from '@/components/delete-log-button';
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/animations';
@@ -80,8 +80,8 @@ export default async function HistoryPage() {
                                         </div>
 
                                         {/* Rodapé do Card */}
-                                        <div className="flex items-center justify-between pt-2 border-t border-border/50">
-                                            <div className="flex items-center gap-1.5 text-[10px]">
+                                        <div className="flex items-center gap-2 pt-2 border-t border-border/50">
+                                            <div className="flex items-center gap-1.5 text-[10px] flex-1">
                                                 <User className="h-3 w-3 opacity-50" />
                                                 {log.seller ? (
                                                     <span className="font-bold">{log.seller.name}</span>
@@ -89,7 +89,20 @@ export default async function HistoryPage() {
                                                     <span className="font-bold opacity-60">ESTOQUE CENTRAL</span>
                                                 )}
                                             </div>
-                                            <DeleteLogButton logId={log.id} />
+                                            <div className="flex items-center gap-2">
+                                                {(log.latitude && log.longitude) && (
+                                                    <a
+                                                        href={`https://www.google.com/maps?q=${log.latitude},${log.longitude}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="p-1.5 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                                                        title="VER LOCALIZAÇÃO NO MAPA"
+                                                    >
+                                                        <MapPin className="h-3.5 w-3.5" />
+                                                    </a>
+                                                )}
+                                                <DeleteLogButton logId={log.id} />
+                                            </div>
                                         </div>
                                     </div>
                                 </StaggerItem>
@@ -159,7 +172,20 @@ export default async function HistoryPage() {
                                                 )}
                                             </TableCell>
                                             <TableCell className="text-right pr-6 py-4">
-                                                <DeleteLogButton logId={log.id} />
+                                                <div className="flex items-center justify-end gap-2">
+                                                    {(log.latitude && log.longitude) && (
+                                                        <a
+                                                            href={`https://www.google.com/maps?q=${log.latitude},${log.longitude}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="p-1.5 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                                                            title="VER LOCALIZAÇÃO NO MAPA"
+                                                        >
+                                                            <MapPin className="h-4 w-4" />
+                                                        </a>
+                                                    )}
+                                                    <DeleteLogButton logId={log.id} />
+                                                </div>
                                             </TableCell>
                                         </TableRow>
                                     );

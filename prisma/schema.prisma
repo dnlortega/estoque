@@ -18,6 +18,9 @@ model Product {
 
   consignments Consignment[]
   movements    MovementLog[]
+
+  @@index([name])
+  @@index([reference])
 }
 
 model Seller {
@@ -32,6 +35,8 @@ model Seller {
 
   consignments Consignment[]
   movements    MovementLog[]
+
+  @@index([name])
 }
 
 model Consignment {
@@ -65,4 +70,9 @@ model MovementLog {
 
   product    Product      @relation(fields: [productId], references: [id])
   seller     Seller?      @relation(fields: [sellerId], references: [id])
+
+  @@index([productId])
+  @@index([sellerId])
+  @@index([timestamp])
+  @@index([type])
 }

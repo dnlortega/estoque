@@ -16,8 +16,15 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: "ESTOQUE+ | SISTEMA DE GESTÃO DE ESTOQUE E CONSIGNAÇÃO",
-  description: "GERENCIE SEU ESTOQUE E CONSIGNAÇÕES DE FORMA PROFISSIONAL",
+  title: {
+    default: "ESTOQUE+ | SISTEMA DE GESTÃO PROFISSIONAL",
+    template: "%s | ESTOQUE+"
+  },
+  description: "Gerenciamento inteligente de estoque central e produtos em consignação. Modo offline e rastreamento GPS integrado.",
+  keywords: ["estoque", "gestão", "consignação", "vendas", "logística", "controle de estoque"],
+  authors: [{ name: "ESTOQUE+" }],
+  creator: "ESTOQUE+",
+  publisher: "ESTOQUE+",
   manifest: "/manifest.json",
   icons: {
     apple: "/logo.png",
@@ -27,9 +34,6 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: "black-translucent",
     title: "Estoque+",
-  },
-  formatDetection: {
-    telephone: false,
   },
 };
 
