@@ -10,9 +10,11 @@ import { toast } from 'sonner';
 
 export function OfflineSyncProvider({ children }: { children: React.ReactNode }) {
     const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
+    const [mounted, setMounted] = useState(false);
     const queuedCount = useLiveQuery(() => db.queuedActions.count()) || 0;
 
     useEffect(() => {
+        setMounted(true);
         const handleOnline = () => {
             setIsOnline(true);
             syncOfflineActions();
@@ -42,27 +44,29 @@ export function OfflineSyncProvider({ children }: { children: React.ReactNode })
             {children}
 
             {/* Indicador de Status Offline/Sincronização */}
-            <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 items-end">
-                {/* Só mostra o aviso vermelho se REALMENTE estiver offline */}
-                {!isOnline && (
-                    <div className="bg-destructive text-destructive-foreground px-4 py-2 rounded-full shadow-lg flex items-center gap-2 animate-pulse border-2 border-white/20">
-                        <WifiOff size={18} />
-                        <span className="text-sm font-bold tracking-tighter">VOCÊ ESTÁ SEM INTERNET</span>
-                    </div>
-                )}
+            {mounted && (
+                <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 items-end">
+                    {/* Só mostra o aviso vermelho se REALMENTE estiver offline */}
+                    {!isOnline && (
+                        <div className="bg-destructive text-destructive-foreground px-4 py-2 rounded-full shadow-lg flex items-center gap-2 animate-pulse border-2 border-white/20">
+                            <WifiOff size={18} />
+                            <span className="text-sm font-bold tracking-tighter">VOCÊ ESTÁ SEM INTERNET</span>
+                        </div>
+                    )}
 
-                {/* Mostra o botão de sincronização se houver itens no cache, independente de estar online ou não */}
-                {queuedCount > 0 && (
-                    <Button
-                        variant="secondary"
-                        className="shadow-xl border-2 border-primary animate-bounce font-black text-xs h-11 px-6 rounded-full"
-                        onClick={() => syncOfflineActions()}
-                    >
-                        <RefreshCcw size={18} className="mr-2 animate-spin-slow" />
-                        {queuedCount} {queuedCount === 1 ? 'AÇÃO PENDENTE' : 'AÇÕES PENDENTES'}
-                    </Button>
-                )}
-            </div>
+                    {/* Mostra o botão de sincronização se houver itens no cache, independente de estar online ou não */}
+                    {queuedCount > 0 && (
+                        <Button
+                            variant="secondary"
+                            className="shadow-xl border-2 border-primary animate-bounce font-black text-xs h-11 px-6 rounded-full"
+                            onClick={() => syncOfflineActions()}
+                        >
+                            <RefreshCcw size={18} className="mr-2 animate-spin-slow" />
+                            {queuedCount} {queuedCount === 1 ? 'AÇÃO PENDENTE' : 'AÇÕES PENDENTES'}
+                        </Button>
+                    )}
+                </div>
+            )}
         </>
     );
 }
