@@ -127,6 +127,7 @@ export default async function HistoryPage() {
                                     <TableHead className="text-[10px] font-black h-10">PRODUTO</TableHead>
                                     <TableHead className="text-[10px] font-black h-10 text-center">QUANTIDADE</TableHead>
                                     <TableHead className="text-[10px] font-black h-10">ENVOLVIDO</TableHead>
+                                    <TableHead className="text-[10px] font-black h-10 text-center">GPS</TableHead>
                                     <TableHead className="text-[10px] font-black h-10 text-right pr-6">AÇÕES</TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -135,8 +136,8 @@ export default async function HistoryPage() {
                                     const config = typeConfig[log.type as keyof typeof typeConfig] || typeConfig.ENTRY;
                                     const Icon = config.icon;
                                     return (
-                                        <TableRow key={log.id} className="hover:bg-muted/20 transition-colors group">
-                                            <TableCell className="text-[10px] font-mono px-6 py-4 opacity-70">
+                                        <TableRow key={log.id} className="hover:bg-muted/20 transition-colors group text-[11px]">
+                                            <TableCell className="font-mono px-6 py-4 opacity-70">
                                                 {format(new Date(log.timestamp), "dd/MM/yyyy | HH:mm", { locale: ptBR })}
                                             </TableCell>
                                             <TableCell className="text-center py-4">
@@ -145,10 +146,10 @@ export default async function HistoryPage() {
                                                     {config.label}
                                                 </Badge>
                                             </TableCell>
-                                            <TableCell className="font-black text-xs py-4">
+                                            <TableCell className="font-black py-4">
                                                 <div className="flex flex-col">
                                                     <span>{log.product.name}</span>
-                                                    <span className="text-[9px] opacity-50 font-medium">REF: {log.product.reference || '-'}</span>
+                                                    <span className="text-[9px] opacity-50 font-medium tracking-tight">REF: {log.product.reference || '-'}</span>
                                                 </div>
                                             </TableCell>
                                             <TableCell className="text-center py-4">
@@ -161,31 +162,36 @@ export default async function HistoryPage() {
                                             <TableCell className="py-4">
                                                 {log.seller ? (
                                                     <div className="flex flex-col">
-                                                        <span className="text-[10px] font-bold">{log.seller.name}</span>
+                                                        <span className="font-bold">{log.seller.name}</span>
                                                         <span className="text-[9px] opacity-50 font-mono">VENDEDOR(A)</span>
                                                     </div>
                                                 ) : (
                                                     <div className="flex flex-col">
-                                                        <span className="text-[10px] font-bold">ESTOQUE CENTRAL</span>
+                                                        <span className="font-bold tracking-tighter">ESTOQUE CENTRAL</span>
                                                         <span className="text-[9px] opacity-50 font-mono">ADMINISTRAÇÃO</span>
                                                     </div>
                                                 )}
                                             </TableCell>
+                                            <TableCell className="text-center py-4">
+                                                {(log.latitude && log.longitude) ? (
+                                                    <a
+                                                        href={`https://www.google.com/maps?q=${log.latitude},${log.longitude}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="inline-flex flex-col items-center group/gps"
+                                                        title="COORDENADAS REAIS"
+                                                    >
+                                                        <MapPin className="h-4 w-4 text-primary group-hover/gps:scale-110 transition-transform" />
+                                                        <span className="text-[8px] font-mono opacity-40 group-hover/gps:opacity-100 transition-opacity">
+                                                            {log.latitude.toFixed(4)}, {log.longitude.toFixed(4)}
+                                                        </span>
+                                                    </a>
+                                                ) : (
+                                                    <span className="text-[9px] opacity-20 uppercase font-bold italic">S/ GPS</span>
+                                                )}
+                                            </TableCell>
                                             <TableCell className="text-right pr-6 py-4">
-                                                <div className="flex items-center justify-end gap-2">
-                                                    {(log.latitude && log.longitude) && (
-                                                        <a
-                                                            href={`https://www.google.com/maps?q=${log.latitude},${log.longitude}`}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="p-1.5 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
-                                                            title="VER LOCALIZAÇÃO NO MAPA"
-                                                        >
-                                                            <MapPin className="h-4 w-4" />
-                                                        </a>
-                                                    )}
-                                                    <DeleteLogButton logId={log.id} />
-                                                </div>
+                                                <DeleteLogButton logId={log.id} />
                                             </TableCell>
                                         </TableRow>
                                     );
