@@ -8,54 +8,76 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 import { useRouter } from 'next/navigation';
 import { db } from '@/lib/db';
-import { getProducts, getSellers } from '@/app/actions';
+import { getProducts, getSellers, getLogs, getDashboardStats } from '@/app/actions';
 
 export function PWAHandler() {
     const [installPrompt, setInstallPrompt] = useState<any>(null);
     const [showBanner, setShowBanner] = useState(false);
     const [isDownloading, setIsDownloading] = useState(false);
     const [downloadProgress, setDownloadProgress] = useState(0);
+    const [currentStep, setCurrentStep] = useState('');
     const [isComplete, setIsComplete] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
         const routes = ['/', '/produtos', '/vendedores', '/consignacao', '/historico', '/sobre'];
-        let loaded = 0;
 
         const prefetch = async () => {
+            // Verificar se os dados já foram salvos para não repetir o processo pesado
+            const hasData = await db.products.count() > 0;
+            if (hasData) {
+                // Se já tem dados, apenas faz o prefetch silencioso das rotas pelo router
+                routes.forEach(route => router.prefetch(route));
+                return;
+            }
+
             setIsDownloading(true);
 
             try {
-                // 1. Salvar Dados Essenciais no IndexedDB (Dexie) para uso offline real
+                // ETAPA 1: SINCRONIZANDO DADOS VITAIS
+                setCurrentStep('SINCRONIZANDO BANCO DE DADOS...');
+                setDownloadProgress(10);
+
                 const [products, sellers] = await Promise.all([
                     getProducts(),
                     getSellers()
                 ]);
+
+                setDownloadProgress(30);
 
                 await db.products.clear();
                 await db.products.bulkAdd(products);
 
                 await db.sellers.clear();
                 await db.sellers.bulkAdd(sellers);
+
+                // ETAPA 2: BAIXANDO INTERFACE E PÁGINAS
+                setCurrentStep('BAIXANDO PÁGINAS DO SISTEMA...');
+                let loaded = 0;
+                for (const route of routes) {
+                    try {
+                        router.prefetch(route);
+                        await fetch(route);
+                        loaded++;
+                        // Progresso vai de 30% a 90% nesta etapa
+                        setDownloadProgress(30 + ((loaded / routes.length) * 60));
+                    } catch (e) {
+                        console.error('Erro ao baixar rota:', route);
+                    }
+                }
+
+                // ETAPA 3: FINALIZANDO
+                setCurrentStep('SISTEMA PRONTO PARA USO!');
+                setDownloadProgress(100);
             } catch (e) {
                 console.error('Erro ao sincronizar dados locais:', e);
             }
 
-            for (const route of routes) {
-                try {
-                    router.prefetch(route);
-                    await fetch(route);
-                    loaded++;
-                    setDownloadProgress((loaded / routes.length) * 100);
-                } catch (e) {
-                    console.error('Erro ao baixar rota:', route);
-                }
-            }
             setTimeout(() => {
                 setIsDownloading(false);
                 setIsComplete(true);
                 setTimeout(() => setIsComplete(false), 5000);
-            }, 800);
+            }, 1000);
         };
 
         prefetch();
@@ -106,8 +128,8 @@ export function PWAHandler() {
                             </div>
                         </div>
                         <div className="flex-1">
-                            <h4 className="text-white text-xs font-black tracking-tighter uppercase">OTIMIZANDO SISTEMA</h4>
-                            <p className="text-[10px] text-white/60 font-medium uppercase italic">Preparando acesso offline rápido...</p>
+                            <h4 className="text-white text-xs font-black tracking-tighter uppercase">{currentStep}</h4>
+                            <p className="text-[10px] text-white/60 font-medium uppercase italic">Aguarde enquanto preparamos seu acesso...</p>
                             <div className="w-full bg-white/10 h-1 rounded-full mt-2 overflow-hidden">
                                 <motion.div
                                     className="bg-primary h-full"
