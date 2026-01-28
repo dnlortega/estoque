@@ -12,6 +12,9 @@ import { Product } from '@/types';
 import { Input } from '@/components/ui/input';
 import { Search, PackageX, Package, Palette, Ruler } from 'lucide-react';
 
+import { db } from '@/lib/db';
+import { useLiveQuery } from 'dexie-react-hooks';
+
 interface ProductListProps {
     initialProducts: Product[];
 }
@@ -19,7 +22,11 @@ interface ProductListProps {
 export function ProductList({ initialProducts }: ProductListProps) {
     const [search, setSearch] = useState('');
 
-    const filteredProducts = initialProducts.filter(p =>
+    // Usa useLiveQuery para reagir a mudanças locais (offline)
+    const localProducts = useLiveQuery(() => db.products.toArray());
+    const products = (localProducts && localProducts.length > 0) ? localProducts : initialProducts;
+
+    const filteredProducts = products.filter(p =>
         p.name.toLowerCase().includes(search.toLowerCase()) ||
         (p.reference && p.reference.toLowerCase().includes(search.toLowerCase()))
     );
