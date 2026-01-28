@@ -6,12 +6,15 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 
+import { useRouter } from 'next/navigation';
+
 export function PWAHandler() {
     const [installPrompt, setInstallPrompt] = useState<any>(null);
     const [showBanner, setShowBanner] = useState(false);
     const [isDownloading, setIsDownloading] = useState(false);
     const [downloadProgress, setDownloadProgress] = useState(0);
     const [isComplete, setIsComplete] = useState(false);
+    const router = useRouter();
 
     useEffect(() => {
         const routes = ['/', '/produtos', '/vendedores', '/consignacao', '/historico', '/sobre'];
@@ -21,6 +24,9 @@ export function PWAHandler() {
             setIsDownloading(true);
             for (const route of routes) {
                 try {
+                    // Prefetch do Router (Layout + Dados JSON)
+                    router.prefetch(route);
+                    // Fetch direto para o Service Worker (HTML + Assets)
                     await fetch(route);
                     loaded++;
                     setDownloadProgress((loaded / routes.length) * 100);
@@ -31,7 +37,6 @@ export function PWAHandler() {
             setTimeout(() => {
                 setIsDownloading(false);
                 setIsComplete(true);
-                // Esconder o banner de sucesso após 5 segundos
                 setTimeout(() => setIsComplete(false), 5000);
             }, 800);
         };

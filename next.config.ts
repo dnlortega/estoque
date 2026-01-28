@@ -7,8 +7,11 @@ const withPWA = require("next-pwa")({
   register: true,
   skipWaiting: true,
   reloadOnOnline: true,
+  cacheOnFrontEndNav: true,
+  aggressiveFrontEndNavCaching: true,
+  buildExcludes: [/middleware-manifest\.json$/],
   fallbacks: {
-    document: "/~offline", // Se você quiser uma página offline customizada
+    document: "/~offline",
   },
 });
 
