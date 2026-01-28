@@ -7,6 +7,8 @@ import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { useRouter } from 'next/navigation';
+import { db } from '@/lib/db';
+import { getProducts, getSellers } from '@/app/actions';
 
 export function PWAHandler() {
     const [installPrompt, setInstallPrompt] = useState<any>(null);
@@ -22,11 +24,26 @@ export function PWAHandler() {
 
         const prefetch = async () => {
             setIsDownloading(true);
+
+            try {
+                // 1. Salvar Dados Essenciais no IndexedDB (Dexie) para uso offline real
+                const [products, sellers] = await Promise.all([
+                    getProducts(),
+                    getSellers()
+                ]);
+
+                await db.products.clear();
+                await db.products.bulkAdd(products);
+
+                await db.sellers.clear();
+                await db.sellers.bulkAdd(sellers);
+            } catch (e) {
+                console.error('Erro ao sincronizar dados locais:', e);
+            }
+
             for (const route of routes) {
                 try {
-                    // Prefetch do Router (Layout + Dados JSON)
                     router.prefetch(route);
-                    // Fetch direto para o Service Worker (HTML + Assets)
                     await fetch(route);
                     loaded++;
                     setDownloadProgress((loaded / routes.length) * 100);

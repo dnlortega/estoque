@@ -9,11 +9,15 @@ export interface QueuedAction {
 
 export class OfflineDB extends Dexie {
     queuedActions!: Table<QueuedAction>;
+    products!: Table<any>;
+    sellers!: Table<any>;
 
     constructor() {
         super('OfflineDB');
-        this.version(1).stores({
-            queuedActions: '++id, actionName, timestamp'
+        this.version(2).stores({
+            queuedActions: '++id, actionName, timestamp',
+            products: 'id, name',
+            sellers: 'id, name'
         });
     }
 }

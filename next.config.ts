@@ -65,15 +65,15 @@ const withPWA = require("next-pwa")({
       options: {
         cacheName: 'others',
         expiration: {
-          maxEntries: 32,
+          maxEntries: 64,
           maxAgeSeconds: 24 * 60 * 60,
         },
-        networkTimeoutSeconds: 10,
+        networkTimeoutSeconds: 5, // Reduzi para 5 segundos para falhar mais rápido e carregar o cache
       },
     },
   ],
   fallbacks: {
-    document: "/~offline",
+    document: "/", // Mudado para "/" para tentar carregar o sistema principal se falhar
   },
 });
 
