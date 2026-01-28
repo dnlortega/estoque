@@ -7,10 +7,6 @@ const withPWA = require("next-pwa")({
   register: true,
   skipWaiting: true,
   reloadOnOnline: true,
-  cacheOnFrontEndNav: true,
-  aggressiveFrontEndNavCaching: true,
-  cacheStartUrl: true, // Garante que a página inicial seja salva
-  dynamicStartUrl: false,
   runtimeCaching: [
     {
       urlPattern: /^https:\/\/fonts\.(?:googleapis|gstatic)\.com\/.*/i,
