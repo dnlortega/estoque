@@ -34,6 +34,11 @@ export function StockAdjustmentDialog({ product }: { product: Product }) {
 
         const delta = type === 'ADD' ? value : -value;
 
+        if (type === 'REMOVE' && value > product.quantity) {
+            toast.error(`SALDO INSUFICIENTE. DISPONÍVEL: ${product.quantity}`);
+            return;
+        }
+
         try {
             const res = await queueAction('adjustStock', [product.id, delta]);
             if (res.success) {

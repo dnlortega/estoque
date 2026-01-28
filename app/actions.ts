@@ -251,7 +251,17 @@ export async function deleteSeller(id: string) {
 
 export async function transferToSeller(productId: string, sellerId: string, quantity: number, gps?: { lat: number; lng: number }) {
     await prisma.$transaction(async (tx) => {
-        // 1. Subtrair do estoque central
+        // 1. Verificar se há estoque suficiente antes de transferir
+        const product = await tx.product.findUnique({
+            where: { id: productId },
+            select: { quantity: true, name: true }
+        });
+
+        if (!product || product.quantity < quantity) {
+            throw new Error(`ESTOQUE INSUFICIENTE. DISPONÍVEL: ${product?.quantity || 0}`);
+        }
+
+        // 2. Subtrair do estoque central
         await tx.product.update({
             where: { id: productId },
             data: { quantity: { decrement: quantity } },
